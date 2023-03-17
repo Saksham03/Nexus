@@ -26,6 +26,24 @@ target_include_directories(particle PUBLIC
     ./src/animation
 )
 
+add_library(nexus STATIC
+    ./src/nexus/Particle.h
+    ./src/nexus/Constraint.h
+    ./src/nexus/Constraint.cpp
+    ./src/nexus/PBDSolver.h
+    ./src/nexus/PBDSolver.cpp
+    ./src/nexus/NexusObject.h
+    ./src/nexus/NexusObject.cpp
+    ./src/nexus/NexusCloth.h
+    ./src/nexus/NexusCloth.cpp
+)
+
+target_include_directories(nexus PUBLIC
+    ./3rdparty/eigen-3.2.8
+    ./3rdparty/glm
+    ./src/nexus
+)
+
 # Set up executables/viewers
 # Find OpenGL
 find_package(OpenGL REQUIRED)
@@ -66,9 +84,10 @@ add_executable(ParticleViewer
 target_include_directories(ParticleViewer PUBLIC 
     ./src/viewer
     ./src/animation
+    ./src/nexus
     ./3rdparty/imgui-1.77
     ./3rdparty/glm
     ./3rdparty/tinyobj
 )
 
-target_link_libraries(ParticleViewer PUBLIC particle glad glfw imgui tinyobj)
+target_link_libraries(ParticleViewer PUBLIC particle glad glfw imgui tinyobj nexus)
