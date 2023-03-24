@@ -2,13 +2,13 @@
 
 ParticleViewer::ParticleViewer(const std::string& name) :
 	Viewer(name),
-	mParticles(std::vector<uPtr<Particle>>())
+	solver(mkU<PBDSolver>())
 {
 	clearColor = ImVec4(0.6f, 0.6f, 0.6f, 1.00f);
 	mParticleModel = std::make_unique<ObjModel>();
 	mRocketModel = std::make_unique<ObjModel>();
-	mParticles.push_back(std::move(mkU<Particle>(vec3(0.0), vec3(0.0f), 2.0f, 0)));
 	mParticleModelSphere = std::make_unique<ObjModel>();
+	solver->addParticle(std::move(mkU<Particle>(vec3(0, 10, 0), vec3(0.0f), 5.0f, 0)));
 	mParticleModel->loadObj("../obj/cube.obj");
 	mRocketModel->loadObj("../obj/cone.obj");
 	mParticleModelSphere->loadObj("../obj/sphere.obj");
@@ -24,10 +24,10 @@ void ParticleViewer::drawScene()
 {
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
-	float deltaT = 1.0 / ImGui::GetIO().Framerate;
+	float deltaT = ImGui::GetIO().DeltaTime;
 	glm::mat4 projView = mCamera.getProjView();
 	drawGridGround(projView);
-	//mParticles.update(deltaT);
+	solver->update(deltaT);
 	drawParticles(projView);
 	glDisable(GL_DEPTH_TEST);
 }
@@ -41,7 +41,7 @@ void ParticleViewer::drawParticles(const glm::mat4& projView)
 
 	glm::vec3 color = vec3(1, 0, 0);
 
-	for (auto& particle : mParticles)
+	for (auto& particle : solver->getParticles())
 	{
 		glm::vec3 pos = particle->x;
 		glm::mat4 model = glm::mat4(1.0f);

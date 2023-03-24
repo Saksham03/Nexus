@@ -2,7 +2,7 @@
 #include "viewer.h"
 #include "aParticleSystem.h"
 #include "objmodel.h"
-#include "Particle.h"
+#include "PBDSolver.h"
 
 class ParticleViewer : public Viewer
 {
@@ -19,8 +19,7 @@ private:
 
 	int mParticleModelType = 0; // 0 for cube, 1 for sphere
 
-	std::vector<uPtr<Particle>> mParticles;
-
+	uPtr<PBDSolver> solver;
 	std::unique_ptr<ObjModel> mParticleModel;
 	std::unique_ptr<ObjModel> mParticleModelSphere;
 	std::unique_ptr<ObjModel> mRocketModel;

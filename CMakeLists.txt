@@ -37,7 +37,7 @@ add_library(nexus STATIC
     ./src/nexus/NexusObject.cpp
     ./src/nexus/NexusCloth.h
     ./src/nexus/NexusCloth.cpp
-    ./src/nexus/includes.h
+    ./src/nexus/defines.h
 )
 
 target_include_directories(nexus PUBLIC
