@@ -1,11 +1,13 @@
 #include "particleViewer.h"
 
 ParticleViewer::ParticleViewer(const std::string& name) :
-	Viewer(name)
+	Viewer(name),
+	mParticles(std::vector<uPtr<Particle>>())
 {
 	clearColor = ImVec4(0.6f, 0.6f, 0.6f, 1.00f);
 	mParticleModel = std::make_unique<ObjModel>();
 	mRocketModel = std::make_unique<ObjModel>();
+	mParticles.push_back(std::move(mkU<Particle>(vec3(0.0), vec3(0.0f), 2.0f, 0)));
 	mParticleModelSphere = std::make_unique<ObjModel>();
 	mParticleModel->loadObj("../obj/cube.obj");
 	mRocketModel->loadObj("../obj/cone.obj");
@@ -25,7 +27,7 @@ void ParticleViewer::drawScene()
 	float deltaT = 1.0 / ImGui::GetIO().Framerate;
 	glm::mat4 projView = mCamera.getProjView();
 	drawGridGround(projView);
-	mParticles.update(deltaT);
+	//mParticles.update(deltaT);
 	drawParticles(projView);
 	glDisable(GL_DEPTH_TEST);
 }
@@ -36,26 +38,20 @@ void ParticleViewer::drawParticles(const glm::mat4& projView)
 	mModelShader->use();
 	mModelShader->setMat4("uProjView", projView);
 	mModelShader->setVec3("uLightPos", mLightPos);
-	for (int i = 0; i < mParticles.getParticleNum(); ++i)
+
+	glm::vec3 color = vec3(1, 0, 0);
+
+	for (auto& particle : mParticles)
 	{
-		AParticle* particle = mParticles.getParticle(i);
-		if (particle->isAlive())
-		{
-			// ramp the color and fade out the particle as its life runs out 
-			float u = particle->getTimeToLive() / particle->m_lifeSpan;
-			float scale = particle->mStartScale * u + particle->mEndScale * (1 - u);
-			float alpha = particle->mStartAlpha * u + particle->mEndAlpha * (1 - u);
-			glm::vec3 color = particle->mStartColor * u + particle->mEndColor * (1 - u);
-			glm::vec3 pos = particle->m_Pos;
-			glm::mat4 model = glm::mat4(1.0f);
-			model = glm::scale(model, glm::vec3(5, 5, 5));
-			model = glm::translate(model, pos);
-			
-			mModelShader->setMat4("uModel", model);
-			mModelShader->setMat3("uModelInvTr", glm::mat3(glm::transpose(glm::inverse(model))));
-			mModelShader->setVec3("color", glm::vec3(1,0,0));
-			//mModelShader->setFloat("uAlpha", alpha);
-			mParticleModelSphere->drawObj();
-		}
+		glm::vec3 pos = particle->x;
+		glm::mat4 model = glm::mat4(1.0f);
+		model = glm::scale(model, glm::vec3(5, 5, 5));
+		model = glm::translate(model, pos);
+
+		mModelShader->setMat4("uModel", model);
+		mModelShader->setMat3("uModelInvTr", glm::mat3(glm::transpose(glm::inverse(model))));
+		mModelShader->setVec3("color", glm::vec3(1, 0, 0));
+		//mModelShader->setFloat("uAlpha", alpha);
+		mParticleModelSphere->drawObj();
 	}
 }

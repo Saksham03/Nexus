@@ -12,5 +12,5 @@ Constraint::Constraint(float stiffness, CONSTRAINT_EQUALITY_TYPE equality)
 
 Constraint::~Constraint()
 {
-	NexusCloth(type, adsa);
+	/*NexusCloth(type, adsa);*/
 }

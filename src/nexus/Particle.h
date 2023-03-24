@@ -1,17 +1,19 @@
 #pragma once
 
-#include <glm.hpp>
+#include "includes.h"
 
-struct	Particle{
+typedef struct	Particle {
 public:
 	/// <summary>
 	/// Position
 	/// </summary>
-	glm::vec3 x;		// position
+	vec3 x;		// position
 	/// <summary>
 	/// Velocity
 	/// </summary>
-	glm::vec3 v;		// velocity
+	vec3 v;		// velocity
 	int phase;		// phase identifier
 	float invMass;		// 1/mass
-};
+
+	Particle(vec3 position, vec3 velocity, float mass, int phase);
+} Particle;

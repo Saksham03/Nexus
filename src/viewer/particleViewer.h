@@ -2,6 +2,7 @@
 #include "viewer.h"
 #include "aParticleSystem.h"
 #include "objmodel.h"
+#include "Particle.h"
 
 class ParticleViewer : public Viewer
 {
@@ -18,7 +19,7 @@ private:
 
 	int mParticleModelType = 0; // 0 for cube, 1 for sphere
 
-	AParticleSystem mParticles;
+	std::vector<uPtr<Particle>> mParticles;
 
 	std::unique_ptr<ObjModel> mParticleModel;
 	std::unique_ptr<ObjModel> mParticleModelSphere;
