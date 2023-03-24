@@ -17,7 +17,7 @@ void PBDSolver::update(float deltaTime)
 	for (auto& particle : particles)
 	{
 		// Handle gravity
-		particle->v = particle->v + deltaTime * gravity;
+		particle->v = particle->v + deltaTime * gravity * particle->mass;
 		particle->x += deltaTime * particle->v;
 	}
 }

@@ -13,6 +13,7 @@ public:
 	/// </summary>
 	vec3 v;		// velocity
 	int phase;		// phase identifier
+	float mass;			// mass
 	float invMass;		// 1/mass
 
 	Particle(vec3 position, vec3 velocity, float mass, int phase);
