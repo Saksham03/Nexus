@@ -6,7 +6,7 @@ NexusObject::NexusObject()
 {}
 
 NexusObject::NexusObject(NEXUS_OBJECT_TYPE type, std::vector<uPtr<Particle>> particles)
-	: type(type), particles(std::move(particles))
+	: type(type), particles(std::move(particles)), constraints(std::vector<uPtr<Constraint>>())
 {}
 
 NexusObject::~NexusObject()

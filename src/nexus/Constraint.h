@@ -18,7 +18,7 @@ enum class CONSTRAINT_EQUALITY_TYPE
 // Abstract Constraint class
 class Constraint 
 {
-private:
+protected:
     std::vector<int> indices;
     CONSTRAINT_EQUALITY_TYPE equality;
     float stiffness;
@@ -26,5 +26,15 @@ public:
     Constraint();
     Constraint(float, CONSTRAINT_EQUALITY_TYPE);
     virtual ~Constraint();
-    virtual float projectConstraint(Particle* p) = 0;
+    virtual float projectConstraint(Particle* p[]) = 0;
+};
+
+class DistanceConstraint : public Constraint
+{
+private:
+    float restLength;
+public:
+    DistanceConstraint(float, float);
+    // Inherited via Constraint
+    virtual float projectConstraint(Particle* p[]) override;
 };

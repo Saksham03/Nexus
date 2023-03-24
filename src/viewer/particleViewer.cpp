@@ -22,15 +22,21 @@ ParticleViewer::~ParticleViewer()
 
 void ParticleViewer::setupScene()
 {
-	uPtr<NexusCloth> cloth = mkU<NexusCloth>();
+	uPtr<NexusCloth> cloth = mkU<NexusCloth>(1.0f, 0.5f);
 	float dist = 2.5f;
 	for (int i = 0; i < 5; i++)
 	{
 		for (int j = 0; j < 5; j++)
 		{
+			float mass = 5.0f;
+			if ((i == 0 || i==4) && (j == 0))
+			{
+				mass = INFINITY;
+			}
 			uPtr<Particle> p = mkU<Particle>(vec3(i * dist, 10, j * dist),
 				vec3(0.0f),
-				0.5f * (std::abs(i-2.0f)+std::abs(j-2.0f)) + 1.0f,
+				//0.5f * (std::abs(i-2.0f)+std::abs(j-2.0f)) + 1.0f,
+				mass,
 				0);
 			cloth->addParticle(std::move(p));
 		}

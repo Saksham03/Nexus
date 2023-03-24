@@ -8,6 +8,7 @@ public:
 	/// Position
 	/// </summary>
 	vec3 x;		// position
+	vec3 prevX;	// previous position
 	/// <summary>
 	/// Velocity
 	/// </summary>

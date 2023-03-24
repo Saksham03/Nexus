@@ -7,8 +7,10 @@
 enum class NEXUS_OBJECT_TYPE { UNDEFINED, CLOTH, RIGIDBODY };
 
 class NexusObject {
-private:
+protected:
 	std::vector<uPtr<Particle>> particles;
+	std::vector<uPtr<Constraint>> constraints;
+
 public:
 	NEXUS_OBJECT_TYPE type;
 
@@ -19,4 +21,5 @@ public:
 
 	void addParticle(uPtr<Particle> p);
 	const std::vector<uPtr<Particle>>& getParticles() const;
+	virtual void preComputeConstraints() = 0;
 };
