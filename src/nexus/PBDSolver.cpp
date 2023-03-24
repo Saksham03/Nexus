@@ -1,11 +1,11 @@
 #include "PBDSolver.h"
 
 PBDSolver::PBDSolver()
-	:PBDSolver(GRAVITY, std::vector<uPtr<Particle>>())
+	:PBDSolver(GRAVITY, std::vector<uPtr<NexusObject>>())
 {}
 
-PBDSolver::PBDSolver(vec3 gravity, std::vector<uPtr<Particle>> particles)
-	: gravity(gravity), particles(std::move(particles))
+PBDSolver::PBDSolver(vec3 gravity, std::vector<uPtr<NexusObject>> objects)
+	: gravity(gravity), objects(std::move(objects))
 {}
 
 
@@ -14,20 +14,28 @@ PBDSolver::~PBDSolver()
 
 void PBDSolver::update(float deltaTime)
 {
-	for (auto& particle : particles)
+	for (auto& obj : objects)
 	{
-		// Handle gravity
-		particle->v = particle->v + deltaTime * gravity * particle->mass;
-		particle->x += deltaTime * particle->v;
+		for (auto& particle : obj->getParticles())
+		{
+			if (particle->mass > 0.0f)
+			{
+				// Handle gravity
+				particle->v = particle->v + deltaTime * gravity * particle->mass;
+				particle->x += deltaTime * particle->v;
+			}
+		}
+
+		obj->update(deltaTime);
 	}
 }
 
-void PBDSolver::addParticle(uPtr<Particle> p)
+void PBDSolver::addObject(uPtr<NexusObject> p)
 {
-	particles.push_back(std::move(p));
+	objects.push_back(std::move(p));
 }
 
-const std::vector<uPtr<Particle>>& PBDSolver::getParticles() const
+const std::vector<uPtr<NexusObject>>& PBDSolver::getObjects() const
 {
-	return particles;
+	return objects;
 }

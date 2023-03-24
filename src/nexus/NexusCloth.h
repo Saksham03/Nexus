@@ -8,12 +8,11 @@
 class NexusCloth : public NexusObject {
 public:
 	NexusCloth();
-	~NexusCloth();
-		/// <summary>
-	/// clloth
+	/// <summary>
+	/// Nexus Cloth object
 	/// </summary>
-	/// <param name="type">Type of Nexus Object</param>
-	/// <param name=""></param>
-	NexusCloth(NEXUS_OBJECT_TYPE, std::vector<Particle>);
-	void solve() override;
+	/// <param name="particles">Set of particles that make up this cloth</param>
+	NexusCloth(std::vector<uPtr<Particle>> particles);
+	~NexusCloth();
+	void update(float deltaTime) override;
 };

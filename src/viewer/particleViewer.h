@@ -3,6 +3,7 @@
 #include "aParticleSystem.h"
 #include "objmodel.h"
 #include "PBDSolver.h"
+#include "NexusCloth.h"
 
 class ParticleViewer : public Viewer
 {
@@ -25,4 +26,5 @@ private:
 	std::unique_ptr<ObjModel> mRocketModel;
 
 	void drawParticles(const glm::mat4& projView);
+	void setupScene();
 };

@@ -1,17 +1,17 @@
 #include "NexusCloth.h"
 
 NexusCloth::NexusCloth()
-	: NexusObject()
+	: NexusCloth(std::vector<uPtr<Particle>>())
 {}
 
-NexusCloth::NexusCloth(NEXUS_OBJECT_TYPE type, std::vector<Particle> particles)
-	: NexusObject(type, particles)
+NexusCloth::NexusCloth(std::vector<uPtr<Particle>> particles)
+	: NexusObject(NEXUS_OBJECT_TYPE::CLOTH, std::move(particles))
 {}
 
 NexusCloth::~NexusCloth()
 {}
 
-void solve()
+void NexusCloth::update(float deltaTime)
 {
 
 }
