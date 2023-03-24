@@ -10,4 +10,4 @@ typedef glm::vec2 vec2;
 #define mkU std::make_unique
 
 // SOLVER RELATED DEFINES
-#define GRAVITY vec3(0.0f, -9.8f, 0.0f)
+#define GRAVITY vec3(0.0f, -0.1f, 0.0f)

@@ -20,10 +20,12 @@ void NexusCloth::update(float deltaTime)
 	DistanceConstraint c(restLength, stiffness);
 	for (int i = 0; i < particles.size() - 1; i++)
 	{
-		for (int j = i + 1; j < particles.size(); j++)
-		{
-			c.projectConstraint(new Particle * [] {particles[i].get(), particles[j].get()});
-		}
+		c.projectConstraint(new Particle * [] {particles[i].get(), particles[i+1].get()});
+
+		//for (int j = 0; j < particles.size(); j++)
+		//{
+		//	c.projectConstraint(new Particle * [] {particles[i].get(), particles[j].get()});
+		//}
 	}
 }
 

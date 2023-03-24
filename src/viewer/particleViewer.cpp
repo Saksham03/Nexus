@@ -26,20 +26,22 @@ void ParticleViewer::setupScene()
 	float dist = 2.5f;
 	for (int i = 0; i < 5; i++)
 	{
-		for (int j = 0; j < 5; j++)
+		//for (int j = 0; j < 5; j++)
+		//{
+		//	
+		//}
+
+		float mass = 5.0f;
+		if (i == 0/* || i == 4) && (j == 0)*/)
 		{
-			float mass = 5.0f;
-			if ((i == 0 || i==4) && (j == 0))
-			{
-				mass = INFINITY;
-			}
-			uPtr<Particle> p = mkU<Particle>(vec3(i * dist, 10, j * dist),
-				vec3(0.0f),
-				//0.5f * (std::abs(i-2.0f)+std::abs(j-2.0f)) + 1.0f,
-				mass,
-				0);
-			cloth->addParticle(std::move(p));
+			mass = INFINITY;
 		}
+		uPtr<Particle> p = mkU<Particle>(vec3(0, i * -dist, 0),
+			vec3(0.0f),
+			//0.5f * (std::abs(i-2.0f)+std::abs(j-2.0f)) + 1.0f,
+			mass,
+			0);
+		cloth->addParticle(std::move(p));
 	}
 	solver->addObject(std::move(cloth));
 }

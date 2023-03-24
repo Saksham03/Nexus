@@ -26,9 +26,15 @@ void PBDSolver::update(float deltaTime)
 				particle->x += deltaTime * particle->v;
 			}
 		}
+	}
 
-		obj->update(deltaTime);	// solve constraints
+	//for (auto& obj : objects)
+	//{
+	//	obj->update(deltaTime);	// solve constraints
+	//}
 
+	for (auto& obj : objects)
+	{
 		for (auto& particle : obj->getParticles())
 		{
 			if (particle->invMass > 0.0)
