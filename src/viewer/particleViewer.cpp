@@ -29,9 +29,9 @@ void ParticleViewer::setupScene()
 
 void ParticleViewer::addRope()
 {
-	uPtr<NexusCloth> cloth = mkU<NexusCloth>(0.9f, 3.0f);
+	uPtr<NexusCloth> cloth = mkU<NexusCloth>(1.0f, 3.0f);
 	float dist = 3.0f;
-	for (int i = 0; i < 15; i++)
+	for (int i = 0; i < 20; i++)
 	{
 		float mass = 1.0f;
 		if (i == 0)
@@ -44,13 +44,13 @@ void ParticleViewer::addRope()
 			0);
 		cloth->addParticle(std::move(p));
 	}
-	cloth->setRowsAndColumns(15, 1);
+	cloth->setRowsAndColumns(20, 1);
 	solver->addObject(std::move(cloth));
 }
 
 void ParticleViewer::addCloth()
 {
-	uPtr<NexusCloth> cloth = mkU<NexusCloth>(0.95f, 3.0f);
+	uPtr<NexusCloth> cloth = mkU<NexusCloth>(0.5f, 3.0f);
 	float dist = 3.0f;
 	for (int i = 0; i < 10; i++)
 	{

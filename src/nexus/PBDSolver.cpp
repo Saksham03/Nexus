@@ -14,36 +14,36 @@ PBDSolver::~PBDSolver()
 
 void PBDSolver::update(float deltaTime)
 {
+	for (auto& obj : objects)
+	{
+		for (auto& particle : obj->getParticles())
+		{
+			if (particle->invMass > 0.0f)
+			{
+				// Handle gravity
+				particle->v = particle->v + deltaTime * gravity;
+				particle->prevX = particle->x;
+				particle->x += deltaTime * particle->v;
+			}
+		}
+	}
+
 	float dt = deltaTime / NUM_SOLVER_SUBSTEPS;
 	for (int i = 0; i < NUM_SOLVER_SUBSTEPS; i++)
 	{
 		for (auto& obj : objects)
 		{
-			for (auto& particle : obj->getParticles())
-			{
-				if (particle->invMass > 0.0f)
-				{
-					// Handle gravity
-					particle->v = particle->v + dt * gravity * particle->mass;
-					particle->prevX = particle->x;
-					particle->x += dt * particle->v;
-				}
-			}
-		}
-
-		for (auto& obj : objects)
-		{
 			obj->update(dt);	// solve constraints
 		}
+	}
 
-		for (auto& obj : objects)
+	for (auto& obj : objects)
+	{
+		for (auto& particle : obj->getParticles())
 		{
-			for (auto& particle : obj->getParticles())
+			if (particle->invMass > 0.0)
 			{
-				if (particle->invMass > 0.0)
-				{
-					particle->v = (particle->x - particle->prevX) / dt;
-				}
+				particle->v = (particle->x - particle->prevX) / deltaTime;
 			}
 		}
 	}

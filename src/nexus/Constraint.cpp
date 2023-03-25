@@ -25,7 +25,7 @@ float DistanceConstraint::projectConstraint(Particle* p[], float dt)
 	float currDist = glm::distance(p[1]->x, p[0]->x);
 
 	float C = currDist - restLength;
-	if (std::abs(C) > 0.0f)
+	if (C != 0.0f)
 	{
 		vec3 C1 = -glm::normalize(dir);
 		vec3 C2 = glm::normalize(dir);
