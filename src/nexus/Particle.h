@@ -1,25 +1,26 @@
 #pragma once
 
-#include <glm.hpp>
+#include "includes.h"
 
 struct	Particle{
 	/// <summary>
 	/// Position
 	/// </summary>
-	glm::vec3 x;		// position
-	glm::vec3 prevx;
+	vec3 x;		// position
+	vec3 prevx;	// previous position
 	/// <summary>
 	/// Velocity
 	/// </summary>
-	glm::vec3 v;		// velocity
+	vec3 v;		// velocity
 	int phase;		// phase identifier
+	float mass;			// mass
 	float invMass;		// 1/mass
 
-	Particle(float m_inv)
-		:x(), v(), phase(0), invMass(m_inv)
+	Particle(float invMass)
+		:x(), v(), phase(0), invMass(invMass)
 	{}
 	
-	Particle(glm::vec3 pos, glm::vec3 vel, int p, float minv)
-		:x(pos), v(vel), phase(p), invMass(minv)
+	Particle(glm::vec3 pos, glm::vec3 vel, int p, float invMass)
+		:x(pos), v(vel), phase(p), invMass(invMass)
 	{}
 };

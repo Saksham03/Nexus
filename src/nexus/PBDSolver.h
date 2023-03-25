@@ -1,12 +1,19 @@
 #pragma once
 
-#include "Particle.h"
 #include "Constraint.h"
+#include "NexusObject.h"
 
 class PBDSolver {
+private:
+	vec3 gravity;
+	std::vector<uPtr<NexusObject>> objects;
 public:
 	PBDSolver();
+	PBDSolver(vec3 gravity, std::vector<uPtr<NexusObject>> objects);
 	~PBDSolver();
-	void solve();
-	void updateStateEuler(std::vector<Particle>&, std::vector<Particle>&, float);
+	void update(float deltaTime);
+
+	void addObject(uPtr<NexusObject> obj);
+	void precomputeConstraints();
+	const std::vector<uPtr<NexusObject>>& getObjects() const;
 };

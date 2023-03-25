@@ -4,16 +4,27 @@
 #include "Constraint.h"
 #include "NexusObject.h"
 #include <vector>
+#include <unordered_set>
 
 class NexusCloth : public NexusObject {
+private:
+	float stiffness;
+	float restLength;
+
+	std::unordered_set<std::pair<Particle*, Particle*>, PairHash> stretchConstraints;
+
+	float nRows, nColumns;	// we're assuming a rectangular cloth only right now. TODO: allow arbitrary meshes
+
 public:
 	NexusCloth();
-	~NexusCloth();
-		/// <summary>
-	/// clloth
+	NexusCloth(float stiffness, float restLength);
+	/// <summary>
+	/// Nexus Cloth object
 	/// </summary>
-	/// <param name="type">Type of Nexus Object</param>
-	/// <param name=""></param>
-	NexusCloth(NEXUS_OBJECT_TYPE, std::vector<Particle>);
-	void solve() override;
+	/// <param name="particles">Set of particles that make up this cloth</param>
+	NexusCloth(std::vector<uPtr<Particle>> particles, float stiffness, float restLength);
+	~NexusCloth();
+	void setRowsAndColumns(int rows, int columns);
+	void update(float deltaTime) override;
+	void preComputeConstraints() override;
 };
