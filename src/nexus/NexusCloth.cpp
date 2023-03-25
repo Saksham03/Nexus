@@ -5,7 +5,7 @@ NexusCloth::NexusCloth()
 {}
 
 NexusCloth::NexusCloth(NEXUS_OBJECT_TYPE type, std::vector<Particle> particles)
-	: NexusObject(type, particles)
+	: NexusObject(type, particles, glm::vec3())
 {}
 
 NexusCloth::~NexusCloth()

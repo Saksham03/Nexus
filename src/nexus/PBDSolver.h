@@ -8,4 +8,5 @@ public:
 	PBDSolver();
 	~PBDSolver();
 	void solve();
+	void updateStateEuler(std::vector<Particle>&, std::vector<Particle>&, float);
 };

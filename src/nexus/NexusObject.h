@@ -10,9 +10,10 @@ class NexusObject {
 public:
 	NEXUS_OBJECT_TYPE type;
 	std::vector<Particle> particles;
+	glm::vec3 force;
 
 	NexusObject();
-	NexusObject(NEXUS_OBJECT_TYPE, std::vector<Particle>);
+	NexusObject(NEXUS_OBJECT_TYPE, std::vector<Particle>, glm::vec3);
 	~NexusObject();
 	virtual void solve() = 0;
 };

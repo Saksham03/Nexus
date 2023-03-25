@@ -2,6 +2,8 @@
 #include "viewer.h"
 #include "aParticleSystem.h"
 #include "objmodel.h"
+#include "Particle.h"
+#include "Constraint.h"
 
 class ParticleViewer : public Viewer
 {
@@ -19,6 +21,8 @@ private:
 	int mParticleModelType = 0; // 0 for cube, 1 for sphere
 
 	AParticleSystem mParticles;
+	std::vector<Particle> nexusParticles;
+	std::vector<std::unique_ptr<Constraint>> constraints;
 
 	std::unique_ptr<ObjModel> mParticleModel;
 	std::unique_ptr<ObjModel> mParticleModelSphere;
