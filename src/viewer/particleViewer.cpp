@@ -22,8 +22,9 @@ ParticleViewer::~ParticleViewer()
 
 void ParticleViewer::setupScene()
 {
-	addRope();
+	//addRope();
 	addCloth();
+	solver->precomputeConstraints();
 }
 
 void ParticleViewer::addRope()
@@ -32,29 +33,24 @@ void ParticleViewer::addRope()
 	float dist = 3.0f;
 	for (int i = 0; i < 15; i++)
 	{
-		//for (int j = 0; j < 5; j++)
-		//{
-		//	
-		//}
-
 		float mass = 1.0f;
-		if (i == 0/* || i == 4) && (j == 0)*/)
+		if (i == 0)
 		{
 			mass = INFINITY;
 		}
 		uPtr<Particle> p = mkU<Particle>(vec3(i * -dist, 10, 0),
 			vec3(0.0f),
-			//0.5f * (std::abs(i-2.0f)+std::abs(j-2.0f)) + 1.0f,
 			mass,
 			0);
 		cloth->addParticle(std::move(p));
 	}
+	cloth->setRowsAndColumns(15, 1);
 	solver->addObject(std::move(cloth));
 }
 
 void ParticleViewer::addCloth()
 {
-	uPtr<NexusCloth> cloth = mkU<NexusCloth>(0.9f, 3.0f);
+	uPtr<NexusCloth> cloth = mkU<NexusCloth>(0.95f, 3.0f);
 	float dist = 3.0f;
 	for (int i = 0; i < 10; i++)
 	{
@@ -65,7 +61,7 @@ void ParticleViewer::addCloth()
 			{
 				mass = INFINITY;
 			}
-			uPtr<Particle> p = mkU<Particle>(vec3(i * -dist, 10, 0),
+			uPtr<Particle> p = mkU<Particle>(vec3(i * -dist, 10, j * dist),
 				vec3(0.0f),
 				//0.5f * (std::abs(i-2.0f)+std::abs(j-2.0f)) + 1.0f,
 				mass,
@@ -73,6 +69,7 @@ void ParticleViewer::addCloth()
 			cloth->addParticle(std::move(p));
 		}
 	}
+	cloth->setRowsAndColumns(10, 10);
 	solver->addObject(std::move(cloth));
 }
 

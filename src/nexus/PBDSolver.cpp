@@ -54,6 +54,15 @@ void PBDSolver::addObject(uPtr<NexusObject> p)
 	objects.push_back(std::move(p));
 }
 
+void PBDSolver::precomputeConstraints()
+{
+	for (auto& obj : objects)
+	{
+		obj->preComputeConstraints();
+	}
+}
+
+
 const std::vector<uPtr<NexusObject>>& PBDSolver::getObjects() const
 {
 	return objects;

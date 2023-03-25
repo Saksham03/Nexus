@@ -14,5 +14,6 @@ public:
 	void update(float deltaTime);
 
 	void addObject(uPtr<NexusObject> obj);
+	void precomputeConstraints();
 	const std::vector<uPtr<NexusObject>>& getObjects() const;
 };

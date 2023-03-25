@@ -9,27 +9,75 @@ NexusCloth::NexusCloth(float stiffness, float restLength)
 {}
 
 NexusCloth::NexusCloth(std::vector<uPtr<Particle>> particles, float stiffness, float restLength)
-	: NexusObject(NEXUS_OBJECT_TYPE::CLOTH, std::move(particles)), stiffness(stiffness), restLength(restLength)
+	: NexusObject(NEXUS_OBJECT_TYPE::CLOTH, std::move(particles)), stiffness(stiffness), restLength(restLength),
+	stretchConstraints(std::unordered_set<std::pair<Particle*, Particle*>, PairHash>())
 {}
 
 NexusCloth::~NexusCloth()
 {}
 
+void NexusCloth::setRowsAndColumns(int rows, int columns)
+{
+	nRows = rows;
+	nColumns = columns;
+}
+
 void NexusCloth::update(float deltaTime)
 {
 	DistanceConstraint c(stiffness, restLength);
-	for (int i = 0; i < particles.size() - 1; i++)
-	{
-		c.projectConstraint(new Particle * [] {particles[i].get(), particles[i+1].get()}, deltaTime);
 
-		for (int j = i+1; j < particles.size(); j++)
-		{
-			c.projectConstraint(new Particle * [] {particles[i].get(), particles[j].get()}, deltaTime);
-		}
+	for (auto iter = stretchConstraints.begin(); iter != stretchConstraints.end(); iter++)
+	{
+		c.projectConstraint(new Particle * [] {iter->first, iter->second}, deltaTime);
 	}
 }
 
 void NexusCloth::preComputeConstraints()
 {
-	
+	for (int i = 0; i < nRows; i++)
+	{
+		for (int j = 0; j <nColumns; j++)
+		{
+			int idx = i * nColumns + j;
+
+			std::pair<Particle*, Particle*> key;
+
+			if (i > 0)
+			{
+				int adjIdx = (i - 1) * nColumns + j;
+				key = std::make_pair(particles[idx].get(), particles[adjIdx].get());
+				if (stretchConstraints.find(key) == stretchConstraints.end())
+				{
+					stretchConstraints.insert(key);
+				}
+			}
+			if (i < nRows - 1)
+			{
+				int adjIdx = (i + 1) * nColumns + j;
+				key = std::make_pair(particles[idx].get(), particles[adjIdx].get());
+				if (stretchConstraints.find(key) == stretchConstraints.end())
+				{
+					stretchConstraints.insert(key);
+				}
+			}
+			if (j > 0)
+			{
+				int adjIdx = i * nColumns + (j - 1);
+				key = std::make_pair(particles[idx].get(), particles[adjIdx].get());
+				if (stretchConstraints.find(key) == stretchConstraints.end())
+				{
+					stretchConstraints.insert(key);
+				}
+			}
+			if (j < nColumns - 1)
+			{
+				int adjIdx = i * nColumns + (j + 1);
+				key = std::make_pair(particles[idx].get(), particles[adjIdx].get());
+				if (stretchConstraints.find(key) == stretchConstraints.end())
+				{
+					stretchConstraints.insert(key);
+				}
+			}
+		}
+	}
 }

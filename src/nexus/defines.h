@@ -11,4 +11,14 @@ typedef glm::vec2 vec2;
 
 // SOLVER RELATED DEFINES
 #define GRAVITY vec3(0.0f, -9.8f, 0.0f)
-#define NUM_SOLVER_SUBSTEPS 1
+#define NUM_SOLVER_SUBSTEPS 5
+
+/// <summary>
+/// Hashes two pointers and gives the same hash regardless of the ordering of the pointers.
+/// </summary>
+struct PairHash {
+    template <typename T1, typename T2>
+    std::size_t operator()(const std::pair<T1*, T2*>& p) const {
+        return std::hash<T1*>()(p.first) ^ std::hash<T2*>()(p.second);
+    }
+};
