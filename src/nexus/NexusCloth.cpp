@@ -17,15 +17,15 @@ NexusCloth::~NexusCloth()
 
 void NexusCloth::update(float deltaTime)
 {
-	DistanceConstraint c(restLength, stiffness);
+	DistanceConstraint c(stiffness, restLength);
 	for (int i = 0; i < particles.size() - 1; i++)
 	{
-		c.projectConstraint(new Particle * [] {particles[i].get(), particles[i+1].get()});
+		c.projectConstraint(new Particle * [] {particles[i].get(), particles[i+1].get()}, deltaTime);
 
-		//for (int j = 0; j < particles.size(); j++)
-		//{
-		//	c.projectConstraint(new Particle * [] {particles[i].get(), particles[j].get()});
-		//}
+		for (int j = i+1; j < particles.size(); j++)
+		{
+			c.projectConstraint(new Particle * [] {particles[i].get(), particles[j].get()}, deltaTime);
+		}
 	}
 }
 

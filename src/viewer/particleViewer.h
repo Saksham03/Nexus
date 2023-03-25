@@ -12,6 +12,9 @@ public:
 	virtual ~ParticleViewer();
 
 	virtual void drawScene()override;
+	void setupScene();
+	void addRope();
+	void addCloth();
 //	virtual void createGUIWindow() override;
 //	virtual void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) override;
 
@@ -26,5 +29,4 @@ private:
 	std::unique_ptr<ObjModel> mRocketModel;
 
 	void drawParticles(const glm::mat4& projView);
-	void setupScene();
 };

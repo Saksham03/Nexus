@@ -26,7 +26,7 @@ public:
     Constraint();
     Constraint(float, CONSTRAINT_EQUALITY_TYPE);
     virtual ~Constraint();
-    virtual float projectConstraint(Particle* p[]) = 0;
+    virtual float projectConstraint(Particle* p[], float dt) = 0;
 };
 
 class DistanceConstraint : public Constraint
@@ -34,7 +34,7 @@ class DistanceConstraint : public Constraint
 private:
     float restLength;
 public:
-    DistanceConstraint(float, float);
+    DistanceConstraint(float stiffness, float restLength);
     // Inherited via Constraint
-    virtual float projectConstraint(Particle* p[]) override;
+    virtual float projectConstraint(Particle* p[], float dt) override;
 };
