@@ -28,7 +28,6 @@ target_include_directories(particle PUBLIC
 
 add_library(nexus STATIC
     ./src/nexus/Particle.h
-    ./src/nexus/Particle.cpp
     ./src/nexus/Constraint.h
     ./src/nexus/Constraint.cpp
     ./src/nexus/PBDSolver.h

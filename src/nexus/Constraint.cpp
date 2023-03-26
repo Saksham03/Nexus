@@ -37,7 +37,7 @@ void DistanceConstraint::projectConstraint() {
 	if (!isConstraintSatisfied()) {
 		glm::vec3 C = glm::normalize(p->x - ref);
 		glm::vec3 deltaX = -function * C;
-		p->x += deltaX;
+		p->x += stiffness * deltaX;
 	}
 }
 
@@ -59,7 +59,7 @@ void StretchConstraint::projectConstraint() {
 		float lambda = -function / (w1 + w2);
 		glm::vec3 deltaX1 = lambda * w1 * C1;
 		glm::vec3 deltaX2 = lambda * w2 * C2;
-		p1->x += deltaX1;
-		p2->x += deltaX2;
+		p1->x += stiffness * deltaX1;
+		p2->x += stiffness * deltaX2;
 	}
 }

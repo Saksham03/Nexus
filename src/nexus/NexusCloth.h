@@ -12,19 +12,17 @@ private:
 	float restLength;
 
 	std::unordered_set<std::pair<Particle*, Particle*>, PairHash> stretchConstraints;
-
-	float nRows, nColumns;	// we're assuming a rectangular cloth only right now. TODO: allow arbitrary meshes
+	float LENGTH, BREADTH;	// we're assuming a rectangular cloth only right now. TODO: allow arbitrary meshes
 
 public:
 	NexusCloth();
-	NexusCloth(float stiffness, float restLength);
+	NexusCloth(float stiffness);
 	/// <summary>
 	/// Nexus Cloth object
 	/// </summary>
 	/// <param name="particles">Set of particles that make up this cloth</param>
-	NexusCloth(std::vector<uPtr<Particle>> particles, float stiffness, float restLength);
+	NexusCloth(std::vector<uPtr<Particle>> particles, float stiffness);
 	~NexusCloth();
-	void setRowsAndColumns(int rows, int columns);
-	void update(float deltaTime) override;
+	void setLengthAndBreadth(int rows, int columns);
 	void preComputeConstraints() override;
 };

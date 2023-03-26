@@ -16,7 +16,7 @@ void PBDSolver::update(float deltaTime)
 {
 	for (auto& obj : objects)
 	{
-		for (auto& particle : obj->getParticles())
+		for (auto& particle : obj->particles)
 		{
 			if (particle->invMass > 0.0f)
 			{
@@ -26,20 +26,17 @@ void PBDSolver::update(float deltaTime)
 				particle->x += deltaTime * particle->v;
 			}
 		}
-	}
 
-	float dt = deltaTime / NUM_SOLVER_SUBSTEPS;
-	for (int i = 0; i < NUM_SOLVER_SUBSTEPS; i++)
-	{
-		for (auto& obj : objects)
+		float dt = deltaTime / NUM_SOLVER_SUBSTEPS;
+		for (int i = 0; i < NUM_SOLVER_SUBSTEPS; i++)
 		{
-			obj->update(dt);	// solve constraints
+			for (auto& c : obj->constraints)
+			{
+				c->projectConstraint();	// solve constraints
+			}
 		}
-	}
 
-	for (auto& obj : objects)
-	{
-		for (auto& particle : obj->getParticles())
+		for (auto& particle : obj->particles)
 		{
 			if (particle->invMass > 0.0)
 			{
