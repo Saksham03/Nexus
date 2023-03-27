@@ -20,8 +20,9 @@ ParticleViewer::~ParticleViewer()
 
 void ParticleViewer::setupScene()
 {
-	addRope();
-	//addCloth();
+	//addRope();
+	addCloth();
+	addBall();
 	solver->precomputeConstraints();
 }
 
@@ -33,14 +34,15 @@ void ParticleViewer::addRope()
 	uPtr<NexusCloth> rope = mkU<NexusCloth>();
 
 	for (int i = 0; i < BREADTH; i++) {
-		for (int j = 0; j < LENGTH; j++) {\
+		for (int j = 0; j < LENGTH; j++) {
 			float mass = 2.0f;
 			if (i == 0 && j == 0)
 			{
 				mass = -1.0f;
 			}
 			uPtr<Particle> p = mkU<Particle>(mass);
-			p->x = glm::vec3(j*-2.0f, 20.0f, 0.0f);
+			p->x = glm::vec3(j*-10.0f, 100.0f, 0.0f);
+			p->radius = 5.0f;
 			rope->addParticle(std::move(p));
 		}
 	}
@@ -49,10 +51,22 @@ void ParticleViewer::addRope()
 	solver->addObject(std::move(rope));
 }
 
+void ParticleViewer::addBall()
+{
+	uPtr<NexusCloth> ball = mkU<NexusCloth>();
+	uPtr<Particle> p = mkU<Particle>(-1.0f);
+	p->x = glm::vec3(100.0f, 0.0f, 100.0f);
+	p->radius = 50.0f;
+	p->color = vec3(1, 0, 0);
+	ball->addParticle(std::move(p));
+	ball->setLengthAndBreadth(1, 1);
+	solver->addObject(std::move(ball));
+}
+
 void ParticleViewer::addCloth()
 {
-	int LENGTH = 10;
-	int BREADTH = 10;
+	int LENGTH = 45;
+	int BREADTH = 30;
 
 	uPtr<NexusCloth> cloth = mkU<NexusCloth>();
 
@@ -61,10 +75,12 @@ void ParticleViewer::addCloth()
 			float mass = 2.0f;
 			if (i == 0 && (j == 0 || j == LENGTH - 1))
 			{
-				mass = -1.0f;
+				//mass = -1.0f;
 			}
 			uPtr<Particle> p = mkU<Particle>(mass);
-			p->x = glm::vec3(j * 3, 20, i * 3);
+			p->radius = 2.5f;
+			p->x = glm::vec3(j * 5.0f, 100, i * 5.0f);
+			p->color = vec3(0, 0, 1);
 			cloth->addParticle(std::move(p));
 		}
 	}
@@ -101,12 +117,12 @@ void ParticleViewer::drawParticles(const glm::mat4& projView)
 		{
 			glm::vec3 pos = particle->x;
 			glm::mat4 model = glm::mat4(1.0f);
-			model = glm::scale(model, glm::vec3(5, 5, 5));
 			model = glm::translate(model, pos);
+			model = glm::scale(model, glm::vec3(particle->radius));
 
 			mModelShader->setMat4("uModel", model);
 			mModelShader->setMat3("uModelInvTr", glm::mat3(glm::transpose(glm::inverse(model))));
-			mModelShader->setVec3("color", glm::vec3(1, 0, 0));
+			mModelShader->setVec3("color", particle->color);
 			//mModelShader->setFloat("uAlpha", alpha);
 			mParticleModelSphere->drawObj();
 		}

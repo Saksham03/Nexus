@@ -56,3 +56,14 @@ public:
     ~StretchConstraint();
     void projectConstraint() override;
 };
+
+class ParticleParticleCollisionConstraint : public Constraint
+{
+private:
+    Particle* p1, * p2;
+
+public:
+    ParticleParticleCollisionConstraint(Particle*, Particle*, float stiffness = 1.0f);
+    ~ParticleParticleCollisionConstraint();
+    void projectConstraint() override;
+};

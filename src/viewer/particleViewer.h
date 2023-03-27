@@ -16,6 +16,7 @@ public:
 	virtual void drawScene()override;
 	void setupScene();
 	void addRope();
+	void addBall();
 	void addCloth();
 //	virtual void createGUIWindow() override;
 //	virtual void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) override;

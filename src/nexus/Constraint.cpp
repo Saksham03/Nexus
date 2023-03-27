@@ -63,3 +63,62 @@ void StretchConstraint::projectConstraint() {
 		p2->x += stiffness * deltaX2;
 	}
 }
+
+#pragma region Particle-Particle-Collisions
+/* -------------------------------------------------------------------
+------------------ PARTICLE-PARTICLE COLLISIONS ----------------------
+---------------------------------------------------------------------- */
+
+ParticleParticleCollisionConstraint::ParticleParticleCollisionConstraint(Particle* p1, Particle* p2, float stiffness)
+	: Constraint(stiffness, CONSTRAINT_TYPE::INEQUALITY), p1(p1), p2(p2)
+{}
+
+ParticleParticleCollisionConstraint::~ParticleParticleCollisionConstraint()
+{}
+
+void ParticleParticleCollisionConstraint::projectConstraint()
+{
+	vec3 dir = p2->x - p1->x;
+	float dist = glm::length(dir);
+
+	if (dist > p1->radius + p2->radius)
+	{
+		// No collisions
+		return;
+	}
+
+	function = dist - (p1->radius + p2->radius);	// should be > 0.0f
+
+	if (!isConstraintSatisfied())
+	{
+		dir = glm::normalize(dir);
+
+		float w1 = p1->invMass;
+		float w2 = p2->invMass;
+		float lambda = function / (w1 + w2);
+
+		glm::vec3 C1 = dir;
+		glm::vec3 C2 = -C1;
+
+		glm::vec3 deltaX1 = lambda * w1 * C1;
+		glm::vec3 deltaX2 = lambda * w2 * C2;
+
+		p1->x += deltaX1 * stiffness;
+		p2->x += deltaX2 * stiffness;
+
+		//float v1 = glm::dot(p1->v, dir);
+		//float v2 = glm::dot(p2->v, dir);
+
+		//float m1 = p1->mass;
+		//float m2 = p2->mass;
+		//float newV1 = (m1 * v1 + m2 * v2 - m2 * (v1 - v2) * stiffness) / (m1 + m2);
+		//float newV2 = (m1 * v1 + m2 * v2 - m1 * (v2 - v1) * stiffness) / (m1 + m2);
+
+		//glm::vec3 deltaV1 = lambda * w1 * (newV1 - v1) * dir;
+		//glm::vec3 deltaV2 = lambda * w1 * (newV2 - v2) * dir;
+
+		/*p1->v += deltaV1;
+		p2->v += deltaV2;*/
+	}
+}
+#pragma endregion
