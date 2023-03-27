@@ -40,7 +40,7 @@ private:
     float radius;
 
 public:
-    DistanceConstraint(Particle*, glm::vec3, float);
+    DistanceConstraint(Particle*, glm::vec3, float, float stiffness = 1.0f);
     ~DistanceConstraint();
     void projectConstraint() override;
 };
@@ -52,7 +52,7 @@ private:
     float threshold;
 
 public:
-    StretchConstraint(Particle*, Particle*, float);
+    StretchConstraint(Particle*, Particle*, float, float stiffness = 1.0f);
     ~StretchConstraint();
     void projectConstraint() override;
 };

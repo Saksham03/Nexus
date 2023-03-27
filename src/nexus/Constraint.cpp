@@ -24,8 +24,8 @@ bool Constraint::isConstraintSatisfied() {
 	}
 }
 
-DistanceConstraint::DistanceConstraint(Particle* p, glm::vec3 ref, float r)
-	:Constraint(1.f, CONSTRAINT_TYPE::EQUALITY), p(p), ref(ref), radius(r)
+DistanceConstraint::DistanceConstraint(Particle* p, glm::vec3 ref, float r, float stiffness)
+	:Constraint(stiffness, CONSTRAINT_TYPE::EQUALITY), p(p), ref(ref), radius(r)
 {}
 
 DistanceConstraint::~DistanceConstraint()
@@ -41,8 +41,8 @@ void DistanceConstraint::projectConstraint() {
 	}
 }
 
-StretchConstraint::StretchConstraint(Particle* p1, Particle* p2, float t)
-	:Constraint(1.f, CONSTRAINT_TYPE::EQUALITY), p1(p1), p2(p2), threshold(t)
+StretchConstraint::StretchConstraint(Particle* p1, Particle* p2, float t, float stiffness)
+	:Constraint(stiffness, CONSTRAINT_TYPE::EQUALITY), p1(p1), p2(p2), threshold(t)
 {}
 
 StretchConstraint::~StretchConstraint()
