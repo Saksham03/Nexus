@@ -12,6 +12,7 @@ typedef glm::vec2 vec2;
 // SOLVER RELATED DEFINES
 #define GRAVITY vec3(0.0f, -19.6f, 0.0f)
 #define NUM_SOLVER_SUBSTEPS 10
+#define FIXED_TIMESTEP 0.0167f
 
 /// <summary>
 /// Hashes two pointers and gives the same hash regardless of the ordering of the pointers.

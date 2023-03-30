@@ -97,7 +97,7 @@ void ParticleViewer::drawScene()
 	glm::mat4 projView = mCamera.getProjView();
 
 	drawGridGround(projView);
-	solver->update(deltaT);
+	solver->update(FIXED_TIMESTEP);
 	drawParticles(projView);
 	glDisable(GL_DEPTH_TEST);
 }
