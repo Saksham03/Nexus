@@ -8,11 +8,10 @@ class SpatialHash
 {
 private:
 	float gridSize;
-	int tableSize;
 	std::unordered_map<int64_t, std::vector<Particle*>> particleMap;
 public:
 	SpatialHash();
-	SpatialHash(float gridSize, int tableSize);
+	SpatialHash(float gridSize);
 	~SpatialHash();
 
 	const float getGridSize() const;

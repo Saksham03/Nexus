@@ -42,7 +42,7 @@ void ParticleViewer::addRope()
 			}
 			uPtr<Particle> p = mkU<Particle>(mass);
 			p->x = glm::vec3(100.0f, 150.0f, j*5.0f);
-			p->radius = 2.5f;
+			p->radius = FIXED_PARTICLE_SIZE;
 			rope->addParticle(std::move(p));
 		}
 	}
@@ -66,8 +66,8 @@ void ParticleViewer::addBall()
 
 void ParticleViewer::addCloth()
 {
-	int LENGTH = 45;
-	int BREADTH = 30;
+	int LENGTH = 100;
+	int BREADTH = 50;
 
 	uPtr<NexusCloth> cloth = mkU<NexusCloth>();
 
@@ -76,10 +76,10 @@ void ParticleViewer::addCloth()
 			float mass = 2.0f;
 			if (i == 0 && (j == 0 || j == LENGTH - 1))
 			{
-				mass = -1.0f;
+				//mass = -1.0f;
 			}
 			uPtr<Particle> p = mkU<Particle>(mass);
-			p->radius = 2.5f;
+			p->radius = FIXED_PARTICLE_SIZE;
 			p->x = glm::vec3(j * 5.0f, 100, i * 5.0f);
 			p->color = vec3(0, 0, 1);
 			cloth->addParticle(std::move(p));

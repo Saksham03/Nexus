@@ -11,9 +11,11 @@ typedef glm::vec2 vec2;
 
 // SOLVER RELATED DEFINES
 #define GRAVITY vec3(0.0f, -9.8f, 0.0f)
-#define NUM_SOLVER_SUBSTEPS 5
+#define NUM_SOLVER_SUBSTEPS 1
+#define NUM_SOLVER_ITERATIONS 5
 #define FIXED_TIMESTEP 0.02f    // roughly equivalent to 50 FPS, same as Unity
-#define SPATIAL_HASH_GRID_SIZE 10.0f
+#define FIXED_PARTICLE_SIZE 2.5f
+#define SPATIAL_HASH_GRID_SIZE (4.0 * FIXED_PARTICLE_SIZE)
 
 /// <summary>
 /// Hashes two pointers and gives the same hash regardless of the ordering of the pointers.

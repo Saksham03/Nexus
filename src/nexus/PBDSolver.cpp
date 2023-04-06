@@ -8,7 +8,7 @@ PBDSolver::PBDSolver()
 
 PBDSolver::PBDSolver(vec3 gravity, std::vector<uPtr<NexusObject>> objects)
 	: gravity(gravity), objects(std::move(objects)), collConstraints(std::vector<uPtr<Constraint>>()),
-	particleHash(SpatialHash(SPATIAL_HASH_GRID_SIZE, 100))
+	particleHash(SpatialHash(SPATIAL_HASH_GRID_SIZE))
 {}
 
 
@@ -20,6 +20,8 @@ void PBDSolver::update(float deltaTime)
 	auto begin = std::chrono::steady_clock::now();
 	generateSpatialHash();
 	generateCollisions();
+
+	//float dt = deltaTime / NUM_SOLVER_SUBSTEPS;
 
 	for (auto& obj : objects)
 	{
@@ -34,8 +36,7 @@ void PBDSolver::update(float deltaTime)
 			}
 		}
 
-		float dt = deltaTime / NUM_SOLVER_SUBSTEPS;
-		for (int i = 0; i < NUM_SOLVER_SUBSTEPS; i++)
+		for (int i = 0; i < NUM_SOLVER_ITERATIONS; i++)
 		{
 			for (auto& c : collConstraints)
 			{
@@ -67,7 +68,6 @@ void PBDSolver::update(float deltaTime)
 			}
 		}
 	}
-
 	auto end = std::chrono::steady_clock::now();
 	std::cout << "Time difference = " << (std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count()) / 1000.0f << "ms" << std::endl;
 }
@@ -138,28 +138,24 @@ void PBDSolver::generateCollisions()
 					}
 				}
 			}
-			//for (int objJ = 0; objJ < objects.size(); objJ++)
-			//{
-			//	if (objI == objJ)
-			//	{
-			//		//continue;
-			//	}
-
-			//	NexusObject* obj2 = objects[objJ].get();
-			//	for (int pJ = 0; pJ < obj2->particles.size(); pJ++)
-			//	{
-			//		Particle* p2= obj2->particles[pJ].get();
-			// if (p1 == p2)
-			// {
-			//	continue;
-			// }
-			//		collConstraints.push_back(mkU<ParticleParticleCollisionConstraint>(p1, p2));
-			//	}
-			//}
+			/*for (int objJ = 0; objJ < objects.size(); objJ++)
+			{
+				NexusObject* obj2 = objects[objJ].get();
+				for (int pJ = 0; pJ < obj2->particles.size(); pJ++)
+				{
+					Particle* p2= obj2->particles[pJ].get();
+					 if (p1 == p2)
+					 {
+						continue;
+					 }
+					 if (ParticleParticleCollisionConstraint::areParticlesColliding(p1, p2))
+					 {
+						 collConstraints.push_back(mkU<ParticleParticleCollisionConstraint>(p1, p2));
+					 }
+				}
+			}*/
 		}
 	}
-	
-	return;
 }
 
 const std::vector<uPtr<NexusObject>>& PBDSolver::getObjects() const
