@@ -10,9 +10,10 @@ typedef glm::vec2 vec2;
 #define mkU std::make_unique
 
 // SOLVER RELATED DEFINES
-#define GRAVITY vec3(0.0f, -19.6f, 0.0f)
-#define NUM_SOLVER_SUBSTEPS 10
-#define FIXED_TIMESTEP 0.0167f
+#define GRAVITY vec3(0.0f, -9.8f, 0.0f)
+#define NUM_SOLVER_SUBSTEPS 5
+#define FIXED_TIMESTEP 0.02f    // roughly equivalent to 50 FPS, same as Unity
+#define SPATIAL_HASH_GRID_SIZE 10.0f
 
 /// <summary>
 /// Hashes two pointers and gives the same hash regardless of the ordering of the pointers.

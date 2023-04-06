@@ -20,7 +20,7 @@ ParticleViewer::~ParticleViewer()
 
 void ParticleViewer::setupScene()
 {
-	//addRope();
+	addRope();
 	addCloth();
 	addBall();
 	solver->precomputeConstraints();
@@ -41,8 +41,8 @@ void ParticleViewer::addRope()
 				mass = -1.0f;
 			}
 			uPtr<Particle> p = mkU<Particle>(mass);
-			p->x = glm::vec3(j*-10.0f, 100.0f, 0.0f);
-			p->radius = 5.0f;
+			p->x = glm::vec3(100.0f, 150.0f, j*5.0f);
+			p->radius = 2.5f;
 			rope->addParticle(std::move(p));
 		}
 	}
@@ -55,12 +55,13 @@ void ParticleViewer::addBall()
 {
 	uPtr<NexusCloth> ball = mkU<NexusCloth>();
 	uPtr<Particle> p = mkU<Particle>(-1.0f);
-	p->x = glm::vec3(100.0f, 0.0f, 100.0f);
-	p->radius = 50.0f;
+	p->x = glm::vec3(100.0f, 50.0f, 100.0f);
+	p->radius = 20.0f;
 	p->color = vec3(1, 0, 0);
-	ball->addParticle(std::move(p));
-	ball->setLengthAndBreadth(1, 1);
-	solver->addObject(std::move(ball));
+	solver->setBigBoi(std::move(p));
+	/*ball->addParticle(std::move(p));
+	ball->setLengthAndBreadth(1, 1);*/
+	//solver->addObject(std::move(ball));
 }
 
 void ParticleViewer::addCloth()
@@ -75,7 +76,7 @@ void ParticleViewer::addCloth()
 			float mass = 2.0f;
 			if (i == 0 && (j == 0 || j == LENGTH - 1))
 			{
-				//mass = -1.0f;
+				mass = -1.0f;
 			}
 			uPtr<Particle> p = mkU<Particle>(mass);
 			p->radius = 2.5f;
@@ -117,8 +118,9 @@ void ParticleViewer::drawParticles(const glm::mat4& projView)
 		{
 			glm::vec3 pos = particle->x;
 			glm::mat4 model = glm::mat4(1.0f);
-			model = glm::translate(model, pos);
-			model = glm::scale(model, glm::vec3(particle->radius));
+			vec3 scale = glm::vec3(particle->radius);
+			model = glm::scale(model, scale);
+			model = glm::translate(model, pos/scale);
 
 			mModelShader->setMat4("uModel", model);
 			mModelShader->setMat3("uModelInvTr", glm::mat3(glm::transpose(glm::inverse(model))));

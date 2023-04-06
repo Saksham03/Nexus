@@ -66,4 +66,6 @@ public:
     ParticleParticleCollisionConstraint(Particle*, Particle*, float stiffness = 1.0f);
     ~ParticleParticleCollisionConstraint();
     void projectConstraint() override;
+
+    static bool areParticlesColliding(Particle*, Particle*);
 };

@@ -105,20 +105,12 @@ void ParticleParticleCollisionConstraint::projectConstraint()
 
 		p1->x += deltaX1 * stiffness;
 		p2->x += deltaX2 * stiffness;
-
-		//float v1 = glm::dot(p1->v, dir);
-		//float v2 = glm::dot(p2->v, dir);
-
-		//float m1 = p1->mass;
-		//float m2 = p2->mass;
-		//float newV1 = (m1 * v1 + m2 * v2 - m2 * (v1 - v2) * stiffness) / (m1 + m2);
-		//float newV2 = (m1 * v1 + m2 * v2 - m1 * (v2 - v1) * stiffness) / (m1 + m2);
-
-		//glm::vec3 deltaV1 = lambda * w1 * (newV1 - v1) * dir;
-		//glm::vec3 deltaV2 = lambda * w1 * (newV2 - v2) * dir;
-
-		/*p1->v += deltaV1;
-		p2->v += deltaV2;*/
 	}
 }
+
+bool ParticleParticleCollisionConstraint::areParticlesColliding(Particle* p1, Particle* p2)
+{
+	return (p1->radius + p2->radius > glm::length(p1->x - p2->x));
+}
+
 #pragma endregion

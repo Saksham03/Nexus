@@ -22,13 +22,14 @@ struct	Particle{
 		: Particle(vec3(0.0f), vec3(0.0f), 0, mass)
 	{}
 	
-	Particle(glm::vec3 pos, glm::vec3 vel, int p, float mass, float radius = 5.0f)
+	Particle(glm::vec3 pos, glm::vec3 vel, int p, float mass, float radius = 5.0f, vec3 color = vec3(1,0,0))
 		:x(pos), 
 		v(vel),
 		phase(p), 
 		mass(mass),
 		invMass(mass < 0.0f ? 0.0f : 1.0f / mass), 
 		prevX(), 
-		radius(radius)
+		radius(radius),
+		color(color)
 	{}
 };
