@@ -8,7 +8,8 @@ PBDSolver::PBDSolver()
 
 PBDSolver::PBDSolver(vec3 gravity, std::vector<uPtr<NexusObject>> objects)
 	: gravity(gravity), objects(std::move(objects)), collConstraints(std::vector<uPtr<Constraint>>()),
-	particleHash(SpatialHash(SPATIAL_HASH_GRID_SIZE))
+	particleHash(SpatialHash(SPATIAL_HASH_GRID_SIZE)),
+	alreadyCheckedCollisions()
 {}
 
 
@@ -100,6 +101,7 @@ void PBDSolver::generateSpatialHash()
 void PBDSolver::generateCollisions()
 {
 	collConstraints.clear();
+	alreadyCheckedCollisions.clear();
 
 	for (int objI = 0; objI < objects.size(); objI++)
 	{
@@ -129,8 +131,10 @@ void PBDSolver::generateCollisions()
 								{
 									continue;
 								}
-								if (ParticleParticleCollisionConstraint::areParticlesColliding(p1, p2))
+								if (ParticleParticleCollisionConstraint::areParticlesColliding(p1, p2)
+									&& alreadyCheckedCollisions.find(std::pair<Particle*, Particle*>(p1, p2)) == alreadyCheckedCollisions.end())
 								{
+									// avoid checking collisions between the same particles twice
 									collConstraints.push_back(mkU<ParticleParticleCollisionConstraint>(p1, p2));
 								}
 							}

@@ -4,12 +4,15 @@
 #include "NexusObject.h"
 #include "SpatialHash.h"
 #include <unordered_map>
+#include <unordered_set>
 
 class PBDSolver {
 private:
 	vec3 gravity;
 	std::vector<uPtr<NexusObject>> objects;
 	std::vector<uPtr<Constraint>> collConstraints;
+	std::unordered_set<std::pair<Particle*, Particle*>, PairHash> collConstraintParticles;
+
 	SpatialHash particleHash;
 
 	uPtr<Particle> pBigBoi;
