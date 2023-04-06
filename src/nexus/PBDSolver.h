@@ -11,7 +11,7 @@ private:
 	vec3 gravity;
 	std::vector<uPtr<NexusObject>> objects;
 	std::vector<uPtr<Constraint>> collConstraints;
-	std::unordered_set<std::pair<Particle*, Particle*>, PairHash> collConstraintParticles;
+	std::unordered_set<std::pair<Particle*, Particle*>, PairHash> alreadyCheckedCollisions;
 
 	SpatialHash particleHash;
 
