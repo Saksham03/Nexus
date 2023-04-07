@@ -1,5 +1,6 @@
 #include "Constraint.h"
 #include "NexusCloth.h"
+
 Constraint::Constraint()
 	: stiffness(1.0f),
 	type(CONSTRAINT_TYPE::EQUALITY),
@@ -105,6 +106,29 @@ void ParticleParticleCollisionConstraint::projectConstraint()
 
 		p1->x += deltaX1 * stiffness;
 		p2->x += deltaX2 * stiffness;
+
+		return;
+		// TODO: fix friction
+		vec3 delta = deltaX2 - deltaX1;
+		vec3 proj = glm::dot(delta, dir) * dir;
+		vec3 tangential = -(delta - proj);
+		float tangentialDist = glm::length(tangential);
+
+		float us = 0.8f;
+		float uk = 0.2f;
+
+		float staticFric1 = glm::length(deltaX1) * us;
+		deltaX1 = (w1 / (w1 + w2)) * tangential;
+		if (tangentialDist >= staticFric1 + 0.0001f)
+		{
+			float dynamicFric = glm::length(deltaX1) * uk;
+			deltaX1 *= std::min((dynamicFric / tangentialDist), 1.0f);
+		}
+
+		deltaX2 = -(w2 / (w1 + w2)) * deltaX1;
+
+		p1->x += deltaX1;
+		p2->x += deltaX2;
 	}
 }
 
