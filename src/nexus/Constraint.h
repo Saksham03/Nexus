@@ -69,3 +69,17 @@ public:
 
     static bool areParticlesColliding(Particle*, Particle*);
 };
+
+class ShapeMatchingConstraint : public Constraint
+{
+private:
+    std::vector<uPtr<Particle>>* particles;
+    vec3 com_rest;                  	// center of mass at rest
+    std::vector<vec3> restPos;          // vector of rest positions (rest configuration) of particles
+    std::vector<vec3> q;                // rest config positions - rest center of mass positions
+    vec3 getCurrentCOM() const;
+public:
+    ShapeMatchingConstraint(std::vector<uPtr<Particle>>* particles, float stiffness = 1.0f);
+    ~ShapeMatchingConstraint();
+    void projectConstraint() override;
+};

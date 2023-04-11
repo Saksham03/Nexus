@@ -4,6 +4,7 @@
 #include "objmodel.h"
 #include "PBDSolver.h"
 #include "NexusCloth.h"
+#include "NexusRigidBody.h"
 #include "Particle.h"
 #include "Constraint.h"
 
@@ -17,7 +18,8 @@ public:
 	void setupScene();
 	void addRope();
 	void addBall();
-	void addCloth();
+	void addCloth(int idx);
+	void addCube(int off);
 //	virtual void createGUIWindow() override;
 //	virtual void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) override;
 

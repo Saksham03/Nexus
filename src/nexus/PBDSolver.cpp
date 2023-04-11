@@ -1,6 +1,4 @@
 #include "PBDSolver.h"
-#include <chrono>
-#include <iostream>
 
 PBDSolver::PBDSolver()
 	:PBDSolver(GRAVITY, std::vector<uPtr<NexusObject>>())
@@ -18,7 +16,6 @@ PBDSolver::~PBDSolver()
 
 void PBDSolver::update(float deltaTime)
 {
-	auto begin = std::chrono::steady_clock::now();
 	generateSpatialHash();
 	generateCollisions();
 
@@ -53,9 +50,27 @@ void PBDSolver::update(float deltaTime)
 			{
 				if (particle->invMass > 0.0f)
 				{
-					if (particle->x.y < -10.f)
+					if (particle->x.y < 0.0f)
 					{
-						particle->x.y = -10.0f;
+						particle->x.y = 0.0f;;
+
+						vec3 delta = particle->x - particle->prevX;
+						vec3 proj = /*glm::dot(delta, vec3(0,1,0))*/ vec3(0, delta.y, 0) /** vec3(0, 1, 0)*/;
+						vec3 tangential = (delta - proj);
+						float tangentialDist = glm::length(tangential);
+
+						float us = 0.05f;
+						float uk = 0.002f;
+
+						float staticFric = glm::length(delta) * us;
+						delta = /*particle->invMass **/ tangential;
+						if (tangentialDist >= staticFric + 0.0001f)
+						{
+							float dynamicFric = glm::length(delta) * uk;
+							delta *= std::min((dynamicFric / tangentialDist), 1.0f);
+						}
+
+						particle->x -= delta;
 					}
 				}
 			}
@@ -69,8 +84,6 @@ void PBDSolver::update(float deltaTime)
 			}
 		}
 	}
-	auto end = std::chrono::steady_clock::now();
-	std::cout << "Time difference = " << (std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count()) / 1000.0f << "ms" << std::endl;
 }
 
 void PBDSolver::addObject(uPtr<NexusObject> p)

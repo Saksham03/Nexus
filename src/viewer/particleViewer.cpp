@@ -1,6 +1,6 @@
 #include "particleViewer.h"
 #include <iostream>
-
+#include <chrono>
 
 ParticleViewer::ParticleViewer(const std::string& name) :
 	Viewer(name),
@@ -21,8 +21,15 @@ ParticleViewer::~ParticleViewer()
 void ParticleViewer::setupScene()
 {
 	addRope();
-	addCloth();
+	addCloth(0);
+	//addCloth(1);
 	addBall();
+	addCube(0);
+	//addCube(1);
+	//addCube(2);
+	//addCube(3);
+	//addCube(4);
+
 	solver->precomputeConstraints();
 }
 
@@ -40,9 +47,12 @@ void ParticleViewer::addRope()
 			{
 				mass = -1.0f;
 			}
-			uPtr<Particle> p = mkU<Particle>(mass);
-			p->x = glm::vec3(100.0f, 150.0f, j*5.0f);
-			p->radius = FIXED_PARTICLE_SIZE;
+			uPtr<Particle> p = mkU<Particle>(glm::vec3(100.0f, 150.0f, j * 5.0f), 
+											vec3(0.0f),
+											0,
+											mass,
+											FIXED_PARTICLE_SIZE);
+
 			rope->addParticle(std::move(p));
 		}
 	}
@@ -55,39 +65,77 @@ void ParticleViewer::addBall()
 {
 	uPtr<NexusCloth> ball = mkU<NexusCloth>();
 	uPtr<Particle> p = mkU<Particle>(-1.0f);
-	p->x = glm::vec3(100.0f, 50.0f, 100.0f);
-	p->radius = 20.0f;
+	p->x = glm::vec3(80.0f, 50.0f, 80.0f);
+	p->prevX = p->x;
+	p->radius = 40.0f;
 	p->color = vec3(1, 0, 0);
+	p->phase = 10;
 	solver->setBigBoi(std::move(p));
 	/*ball->addParticle(std::move(p));
 	ball->setLengthAndBreadth(1, 1);*/
 	//solver->addObject(std::move(ball));
 }
 
-void ParticleViewer::addCloth()
+void ParticleViewer::addCloth(int idx)
 {
-	int LENGTH = 100;
-	int BREADTH = 50;
+	int LENGTH = 30;
+	int BREADTH = 30;
 
 	uPtr<NexusCloth> cloth = mkU<NexusCloth>();
 
 	for (int i = 0; i < BREADTH; i++) {
 		for (int j = 0; j < LENGTH; j++) {
 			float mass = 2.0f;
-			if (i == 0 && (j == 0 || j == LENGTH - 1))
+			if (idx == 0 && (i == 0 /*|| i == BREADTH - 1*/) && (j == 0 || j == LENGTH - 1))
 			{
 				//mass = -1.0f;
 			}
-			uPtr<Particle> p = mkU<Particle>(mass);
-			p->radius = FIXED_PARTICLE_SIZE;
-			p->x = glm::vec3(j * 5.0f, 100, i * 5.0f);
-			p->color = vec3(0, 0, 1);
+			uPtr<Particle> p = mkU<Particle>(vec3(j * 5.0f, 100 + 20 * idx, i * 5.0f),
+											vec3(0.0f),
+											0,
+											mass,
+											FIXED_PARTICLE_SIZE,
+											vec3(0, idx, 1));
+
 			cloth->addParticle(std::move(p));
 		}
 	}
 
 	cloth->setLengthAndBreadth(LENGTH, BREADTH);
 	solver->addObject(std::move(cloth));
+}
+
+void ParticleViewer::addCube(int off)
+{
+	int LENGTH = 5;
+	int BREADTH = 5;
+	int HEIGHT = 5;
+
+	uPtr<NexusRigidBody> cube = mkU<NexusRigidBody>();
+	vec3 offset(50 + off * 2, 200 + off*40, 50 );
+	mat3 rot = mat3(-0.9036922, 0.0000000, -0.4281827,
+	-0.3909073, 0.4080821, 0.8250215,
+	0.1747337, 0.9129453, -0.3687806);
+
+	for (int i = 0; i < BREADTH; i++) {
+		for (int j = 0; j < LENGTH; j++) {
+			for (int k = 0; k < HEIGHT; k++) {
+				float mass = 2.0f;
+
+				uPtr<Particle> p = mkU<Particle>(vec3(i * 5.0f, k * 5.0f, j * 5.0f) + offset,
+												vec3(0.0f),
+												0,
+												mass,
+												FIXED_PARTICLE_SIZE,
+												vec3(1, 1, 1));
+
+				cube->addParticle(std::move(p));
+			}
+		}
+	}
+
+	//cube->setLengthAndBreadth(LENGTH, BREADTH);
+	solver->addObject(std::move(cube));
 }
 
 void ParticleViewer::drawScene()
@@ -98,7 +146,10 @@ void ParticleViewer::drawScene()
 	glm::mat4 projView = mCamera.getProjView();
 
 	drawGridGround(projView);
+	auto begin = std::chrono::steady_clock::now();
 	solver->update(FIXED_TIMESTEP);
+	auto end = std::chrono::steady_clock::now();
+	std::cout << "Time difference = " << (std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count()) / 1000.0f << "ms" << std::endl;
 	drawParticles(projView);
 	glDisable(GL_DEPTH_TEST);
 }

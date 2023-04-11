@@ -28,7 +28,7 @@ struct	Particle{
 		phase(p), 
 		mass(mass),
 		invMass(mass < 0.0f ? 0.0f : 1.0f / mass), 
-		prevX(), 
+		prevX(pos), 
 		radius(radius),
 		color(color)
 	{}
