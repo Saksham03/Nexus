@@ -144,6 +144,12 @@ void PBDSolver::generateCollisions()
 								{
 									continue;
 								}
+
+								if (p1->phase >= 0 && p2->phase >= 0 && p1->phase == p2->phase)
+								{
+									continue;
+								}
+
 								if (ParticleParticleCollisionConstraint::areParticlesColliding(p1, p2)
 									&& alreadyCheckedCollisions.find(std::pair<Particle*, Particle*>(p1, p2)) == alreadyCheckedCollisions.end())
 								{

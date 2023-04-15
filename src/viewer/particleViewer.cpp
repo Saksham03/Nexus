@@ -24,9 +24,9 @@ void ParticleViewer::setupScene()
 	addCloth(0);
 	//addCloth(1);
 	addBall();
+	addCube(1);
 	addCube(0);
-	//addCube(1);
-	//addCube(2);
+	addCube(2);
 	//addCube(3);
 	//addCube(4);
 
@@ -49,7 +49,7 @@ void ParticleViewer::addRope()
 			}
 			uPtr<Particle> p = mkU<Particle>(glm::vec3(100.0f, 150.0f, j * 5.0f), 
 											vec3(0.0f),
-											0,
+											-1,
 											mass,
 											FIXED_PARTICLE_SIZE);
 
@@ -69,7 +69,7 @@ void ParticleViewer::addBall()
 	p->prevX = p->x;
 	p->radius = 40.0f;
 	p->color = vec3(1, 0, 0);
-	p->phase = 10;
+	p->phase = -1;
 	solver->setBigBoi(std::move(p));
 	/*ball->addParticle(std::move(p));
 	ball->setLengthAndBreadth(1, 1);*/
@@ -78,21 +78,21 @@ void ParticleViewer::addBall()
 
 void ParticleViewer::addCloth(int idx)
 {
-	int LENGTH = 30;
-	int BREADTH = 30;
+	int LENGTH = 50;
+	int BREADTH = 50;
 
 	uPtr<NexusCloth> cloth = mkU<NexusCloth>();
 
 	for (int i = 0; i < BREADTH; i++) {
 		for (int j = 0; j < LENGTH; j++) {
 			float mass = 2.0f;
-			if (idx == 0 && (i == 0 /*|| i == BREADTH - 1*/) && (j == 0 || j == LENGTH - 1))
+			if (/*idx == 0 && */(i == 0 || i == BREADTH - 1) && (j == 0 || j == LENGTH - 1))
 			{
-				//mass = -1.0f;
+				mass = -1.0f;
 			}
-			uPtr<Particle> p = mkU<Particle>(vec3(j * 5.0f, 100 + 20 * idx, i * 5.0f),
+			uPtr<Particle> p = mkU<Particle>(vec3(j * 5.0f, 100 + 150 * idx, i * 5.0f),
 											vec3(0.0f),
-											0,
+											-1,
 											mass,
 											FIXED_PARTICLE_SIZE,
 											vec3(0, idx, 1));
@@ -111,8 +111,10 @@ void ParticleViewer::addCube(int off)
 	int BREADTH = 5;
 	int HEIGHT = 5;
 
+	int phase = NexusObject::getObjectID();
+
 	uPtr<NexusRigidBody> cube = mkU<NexusRigidBody>();
-	vec3 offset(50 + off * 2, 200 + off*40, 50 );
+	vec3 offset(50 + off * 50, 200 + off*100, 50 );
 	mat3 rot = mat3(-0.9036922, 0.0000000, -0.4281827,
 	-0.3909073, 0.4080821, 0.8250215,
 	0.1747337, 0.9129453, -0.3687806);
@@ -120,11 +122,11 @@ void ParticleViewer::addCube(int off)
 	for (int i = 0; i < BREADTH; i++) {
 		for (int j = 0; j < LENGTH; j++) {
 			for (int k = 0; k < HEIGHT; k++) {
-				float mass = 2.0f;
+				float mass = 10.0f;
 
 				uPtr<Particle> p = mkU<Particle>(vec3(i * 5.0f, k * 5.0f, j * 5.0f) + offset,
-												vec3(0.0f),
-												0,
+												vec3(0.0f), 
+												phase,
 												mass,
 												FIXED_PARTICLE_SIZE,
 												vec3(1, 1, 1));

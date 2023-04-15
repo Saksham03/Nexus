@@ -18,5 +18,11 @@ NexusRigidBody::~NexusRigidBody()
 
 void NexusRigidBody::preComputeConstraints()
 {	
-	constraints.push_back(std::move(mkU<ShapeMatchingConstraint>(&particles)));
+	std::vector<Particle*> ps;
+	for (auto& p : particles)
+	{
+		ps.push_back(p.get());
+	}
+
+	constraints.push_back(mkU<ShapeMatchingConstraint>(ps, stiffness));
 }

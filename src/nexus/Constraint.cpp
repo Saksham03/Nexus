@@ -1,7 +1,4 @@
 #include "Constraint.h"
-#include <algorithm>
-#include <vector>
-//#include <Eigen/src/Core00/Matrix.h>
 
 Constraint::Constraint()
 	: stiffness(1.0f),
@@ -153,98 +150,13 @@ bool ParticleParticleCollisionConstraint::areParticlesColliding(Particle* p1, Pa
 /* -------------------------------------------------------------------
 ------------------------- SHAPE-MATCHING -----------------------------
 ---------------------------------------------------------------------- */
-
-// Function to compute the Jacobi rotation matrix corresponding to a Givens rotation.
-mat3 JacobiRotation(vec2& u, vec2& v) {
-	// Compute the sine and cosine of the angle of the rotation.
-	double s = 2.0 * u[0] * v[1] - 2.0 * u[1] * v[0];
-	double c = u[0] * u[0] + u[1] * u[1] - v[0] * v[0] - v[1] * v[1];
-
-	// If the rotation is not a pure rotation, then we need to scale the vectors.
-	if (c != 0.0) {
-		double t = sqrt(s * s + c * c);
-		u *= t / c;
-		v *= t / c;
-	}
-
-	// Construct the rotation matrix.
-	mat3 R;
-	R[0][0] = c;
-	R[0][1] = s;
-	R[1][0] = -s;
-	R[1][1] = c;
-	return R;
-}
-
-// Function to decompose a 3x3 matrix into a rotation matrix using the Jacobi rotation method.
-mat3 JacobiDecomposition(mat3& A) {
-	// Initialize the rotation matrix to the identity matrix.
-	mat3 R(1.0f);
-
-	// Iterate until the matrix is diagonal.
-	for (int iter = 0; iter < 10; iter++)
-	{
-		// Find the two columns of the matrix that have the largest off-diagonal element.
-		int i = 0;
-		int j = 1;
-		for (int k = 0; k < 3; k++) {
-			if (abs(A[i][k]) < abs(A[j][k])) {
-				i = k;
-			}
-			else if (abs(A[i][k]) > abs(A[j][k])) {
-				j = k;
-			}
-		}
-
-		// Compute the Givens rotation that eliminates the off-diagonal element in column i.
-		vec2 u = { A[i][i], A[i][j] };
-		vec2 v = { A[j][i], A[j][j] };
-		mat3 G = JacobiRotation(u, v);
-
-		// Apply the Givens rotation to the matrix.
-		A = G * A * glm::transpose(G);
-
-		// If the matrix is now diagonal, then we are done.
-		bool isDiag = true;
-		for (int i = 0; i < 3; i++)
-		{
-			for (int j = 0; j < 3; j++)
-			{
-				if (i == j)
-				{
-					continue;
-				}
-
-				if (glm::abs(A[i][j] - A[j][i]) > 1e-10)
-				{
-					isDiag = false;
-					break;
-				}
-			}
-
-			if (isDiag == false)
-			{
-				break;
-			}
-		}
-
-		if (isDiag)
-		{
-			break;
-		}
-	}
-
-	// Return the rotation matrix.
-	return R;
-}
-
-ShapeMatchingConstraint::ShapeMatchingConstraint(std::vector<uPtr<Particle>>* particles, float stiffness)
-	: Constraint(stiffness, CONSTRAINT_TYPE::EQUALITY), particles(particles)
+ShapeMatchingConstraint::ShapeMatchingConstraint(std::vector<Particle*> particles, float stiffness)
+	: Constraint(stiffness, CONSTRAINT_TYPE::EQUALITY), particles(particles), prevRot(Quaterniond::Identity())
 {
 	// store rest configuration
 	com_rest = vec3(0.0f);
 	float sumMass = 0.0f;
-	for (auto& particle : (*particles))
+	for (auto& particle : particles)
 	{
 		com_rest += particle->mass * particle->x;
 		restPos.push_back(particle->x);
@@ -252,7 +164,7 @@ ShapeMatchingConstraint::ShapeMatchingConstraint(std::vector<uPtr<Particle>>* pa
 	}
 	com_rest /= sumMass;
 
-	for (auto& particle : (*particles))
+	for (auto& particle : (particles))
 	{
 		q.push_back(particle->x - com_rest);
 	}
@@ -261,48 +173,32 @@ ShapeMatchingConstraint::ShapeMatchingConstraint(std::vector<uPtr<Particle>>* pa
 ShapeMatchingConstraint::~ShapeMatchingConstraint()
 {}
 
-//void extractRotation(const Matrix3d& A, Quaterniond& q,
-//	const unsigned int maxIter)
-//{
-//	for (unsigned int iter = 0; iter < maxIter; iter++)
-//	{
-//		Matrix3d R = q.matrix();
-//		Vector3d omega = (R.col(0).cross(A.col(0)) + R.col
-//		(1).cross(A.col(1)) + R.col(2).cross(A.col(2))
-//			) * (1.0 / fabs(R.col(0).dot(A.col(0)) + R.col
-//			(1).dot(A.col(1)) + R.col(2).dot(A.col(2))) +
-//				1.0e-9);
-//		double w = omega.norm();
-//		if (w < 1.0e-9)
-//			break;
-//		q = Quaterniond(AngleAxisd(w, (1.0 / w) * omega)) *
-//			q;
-//		q.normalize();
-//	}
-//}
-
 void ShapeMatchingConstraint::projectConstraint()
 {
 	vec3 currCOM = getCurrentCOM();
 
 	// covariance matrix A
-	glm::mat3 A;
-	for (int i = 0; i < particles->size(); i++)
+	Matrix3d A;
+	A.setZero();
+	for (int i = 0; i < particles.size(); i++)
 	{
-		Particle* particle = particles->at(i).get();
+		Particle* particle = particles[i];
 		vec3 p = particle->x - currCOM;
 
-		A[0][0] += p[0] * q[i][0];	A[0][1] += p[0] * q[i][1];	A[0][2] += p[0] * q[i][2];
-		A[1][0] += p[1] * q[i][0];	A[1][1] += p[1] * q[i][1];	A[1][2] += p[1] * q[i][2];
-		A[2][0] += p[2] * q[i][0];	A[2][1] += p[2] * q[i][1];	A[0][2] += p[2] * q[i][2];
+		A(0, 0) += p[0] * q[i][0];	A(0, 1) += p[0] * q[i][1];	A(0, 2) += p[0] * q[i][2];
+		A(1, 0) += p[1] * q[i][0];	A(1, 1) += p[1] * q[i][1];	A(1, 2) += p[1] * q[i][2];
+		A(2, 0) += p[2] * q[i][0];	A(2, 1) += p[2] * q[i][1];	A(2, 2) += p[2] * q[i][2];
 	}
 
-	mat3 R = JacobiDecomposition(A);
-
-	for (int i = 0; i < particles->size(); i++)
+	extractRotation(A, prevRot, 5);
+	Matrix3d R = prevRot.matrix();
+	for (int i = 0; i < particles.size(); i++)
 	{
-		Particle* particle = particles->at(i).get();
-		vec3 g = R * q[i] + currCOM;
+		Particle* particle = particles[i];
+		Vector3d qi(q[i][0], q[i][1], q[i][2]);
+		qi = R * qi;
+		vec3 gi(qi(0), qi(1), qi(2));
+		vec3 g = gi + currCOM;
 
 		vec3 C = (g - particle->x) * stiffness;
 		particle->x += C;
@@ -313,7 +209,7 @@ vec3 ShapeMatchingConstraint::getCurrentCOM() const
 {
 	vec3 com = vec3(0.0);
 	float sumMass = 0.0f;
-	for (auto& particle : (*particles))
+	for (auto& particle : particles)
 	{
 		com += particle->mass * particle->x;
 		sumMass += particle->mass;
@@ -322,4 +218,22 @@ vec3 ShapeMatchingConstraint::getCurrentCOM() const
 	return com;
 }
 
+void ShapeMatchingConstraint::extractRotation(const Matrix3d& A, Quaterniond& q, const unsigned int maxIter) const
+{
+	for (unsigned int iter = 0; iter < maxIter; iter++)
+	{
+		Matrix3d R = q.matrix();
+		Vector3d omega = (R.col(0).cross(A.col(0)) + R.col
+		(1).cross(A.col(1)) + R.col(2).cross(A.col(2))
+			) * (1.0 / fabs(R.col(0).dot(A.col(0)) + R.col
+			(1).dot(A.col(1)) + R.col(2).dot(A.col(2))) +
+				1.0e-9);
+		double w = omega.norm();
+		if (w < 1.0e-9)
+			break;
+		q = Quaterniond(AngleAxisd(w, (1.0 / w) * omega)) *
+			q;
+		q.normalize();
+	}
+}
 #pragma endregion

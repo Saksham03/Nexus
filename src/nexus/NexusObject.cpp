@@ -1,6 +1,8 @@
 #include "NexusObject.h"
 #include <stdio.h>
 
+int NexusObject::lastId = 0;
+
 NexusObject::NexusObject(NEXUS_OBJECT_TYPE type, std::vector<uPtr<Particle>> particles)
 	: type(type), particles(std::move(particles)), constraints(std::vector<uPtr<Constraint>>())
 {}
@@ -16,4 +18,9 @@ void NexusObject::addParticle(uPtr<Particle> p)
 const std::vector<uPtr<Particle>>& NexusObject::getParticles() const
 {
 	return particles;
+}
+
+int NexusObject::getObjectID()
+{
+	return NexusObject::lastId++;
 }
