@@ -11,7 +11,6 @@ private:
 	float stiffness;
 	float restLength;
 
-	std::unordered_set<std::pair<Particle*, Particle*>, PairHash> stretchConstraints;
 	float LENGTH, BREADTH;	// we're assuming a rectangular cloth only right now. TODO: allow arbitrary meshes
 
 public:

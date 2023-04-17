@@ -1,3 +1,4 @@
 [B|b]uild/*
 Debug/*
 Release/*
+RelWithDebInfo/*
