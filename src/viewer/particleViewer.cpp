@@ -20,7 +20,7 @@ ParticleViewer::~ParticleViewer()
 
 void ParticleViewer::setupScene()
 {
-	addRope();
+	//addRope();
 	addCloth();
 	solver->precomputeConstraints();
 }
@@ -51,20 +51,20 @@ void ParticleViewer::addRope()
 
 void ParticleViewer::addCloth()
 {
-	int LENGTH = 10;
-	int BREADTH = 10;
+	int LENGTH = 40;
+	int BREADTH = 25;
 
 	uPtr<NexusCloth> cloth = mkU<NexusCloth>();
 
 	for (int i = 0; i < BREADTH; i++) {
 		for (int j = 0; j < LENGTH; j++) {
 			float mass = 2.0f;
-			if (i == 0 && (j == 0 || j == LENGTH - 1))
+			if (i == 0)// && (j == 0 || j == LENGTH - 1))
 			{
 				mass = -1.0f;
 			}
 			uPtr<Particle> p = mkU<Particle>(mass);
-			p->x = glm::vec3(j * 3, 20, i * 3);
+			p->x = glm::vec3(j * 2, 20, i * 2);
 			cloth->addParticle(std::move(p));
 		}
 	}

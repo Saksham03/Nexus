@@ -56,3 +56,14 @@ public:
     ~StretchConstraint();
     void projectConstraint() override;
 };
+
+class BendingConstraint : public Constraint
+{
+private:
+    Particle* p1, * p2, * p3, * p4;
+    float threshold;
+public:
+    BendingConstraint(Particle*, Particle*, Particle*, Particle*, float);
+    ~BendingConstraint();
+    void projectConstraint() override;
+};

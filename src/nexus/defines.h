@@ -2,7 +2,6 @@
 
 #include <glm.hpp>
 #include <memory>
-#include <defines.h>
 
 typedef glm::vec3 vec3;
 typedef glm::vec2 vec2;
