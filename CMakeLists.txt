@@ -36,7 +36,11 @@ add_library(nexus STATIC
     ./src/nexus/NexusObject.cpp
     ./src/nexus/NexusCloth.h
     ./src/nexus/NexusCloth.cpp
+    ./src/nexus/NexusRigidBody.h
+    ./src/nexus/NexusRigidBody.cpp
     ./src/nexus/defines.h
+    ./src/nexus/SpatialHash.h
+    ./src/nexus/SpatialHash.cpp
 )
 
 target_include_directories(nexus PUBLIC

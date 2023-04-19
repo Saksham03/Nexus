@@ -4,10 +4,13 @@
 #include "Constraint.h"
 #include <vector>
 
-enum class NEXUS_OBJECT_TYPE { UNDEFINED, CLOTH, RIGIDBODY };
+enum class NEXUS_OBJECT_TYPE { UNDEFINED = -1, CLOTH = 0, RIGIDBODY = 100 };
 
 class NexusObject {
 	friend class PBDSolver;
+private:
+	static int lastId;
+
 protected:
 	std::vector<uPtr<Particle>> particles;
 	std::vector<uPtr<Constraint>> constraints;
@@ -21,4 +24,5 @@ public:
 	void addParticle(uPtr<Particle> p);
 	const std::vector<uPtr<Particle>>& getParticles() const;
 	virtual void preComputeConstraints() = 0;
+	static int getObjectID();
 };

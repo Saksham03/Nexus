@@ -27,7 +27,9 @@ void NexusCloth::preComputeConstraints()
 	// Stretch constraints
 	for (int i = 0; i < BREADTH; i++) {
 		for (int j = 0; j < LENGTH - 1; j++) {
-			std::unique_ptr<StretchConstraint> d = std::make_unique<StretchConstraint>(particles[i * LENGTH + j].get(), particles[i * LENGTH + j + 1].get(), 2.f);
+			Particle* p1 = particles[i * LENGTH + j].get();
+			Particle* p2 = particles[i * LENGTH + j + 1].get();
+			std::unique_ptr<StretchConstraint> d = std::make_unique<StretchConstraint>(p1, p2, glm::length(p2->x - p1->x), stiffness);
 			constraints.push_back(std::move(d));
 		}
 	}
