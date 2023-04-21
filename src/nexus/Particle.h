@@ -1,6 +1,6 @@
 #pragma once
 
-#include "includes.h"
+#include "defines.h"
 
 struct	Particle{
 	/// <summary>
