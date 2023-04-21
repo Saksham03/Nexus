@@ -1,6 +1,5 @@
 #pragma once
 #include "viewer.h"
-#include "aParticleSystem.h"
 #include "objmodel.h"
 #include "PBDSolver.h"
 #include "NexusCloth.h"
@@ -29,7 +28,6 @@ private:
 	int mParticleModelType = 0; // 0 for cube, 1 for sphere
 
 	uPtr<PBDSolver> solver;
-	AParticleSystem mParticles;
 	std::vector<Particle> nexusParticles;
 	std::vector<std::unique_ptr<Constraint>> constraints;
 
