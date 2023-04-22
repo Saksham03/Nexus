@@ -1,6 +1,7 @@
 #include "particleViewer.h"
 #include <iostream>
 #include <chrono>
+#include "tiny_obj_loader.h"
 
 ParticleViewer::ParticleViewer(const std::string& name) :
 	Viewer(name),
@@ -9,6 +10,8 @@ ParticleViewer::ParticleViewer(const std::string& name) :
 	clearColor = ImVec4(0.8f, 0.8f, 0.8f, 1.00f);
 	mParticleModelSphere = std::make_unique<ObjModel>();
 	mParticleModelSphere->loadObj("../obj/sphere.obj");
+	mCustomMesh = mkU<ObjModel>();
+	mCustomMesh->loadObj("../obj/calavera.obj");
 	setupScene();
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -20,15 +23,17 @@ ParticleViewer::~ParticleViewer()
 
 void ParticleViewer::setupScene()
 {
-	addRope();
-	addCloth(0);
+	//addRope();
+	//addCloth(0);
 	//addCloth(1);
-	addBall();
-	addCube(1);
-	addCube(0);
-	addCube(2);
+	//addBall();
+	//addCube(1);
+	//addCube(0);
+	//addCube(2);
 	//addCube(3);
 	//addCube(4);
+
+	addMesh();
 
 	solver->precomputeConstraints();
 }
@@ -140,6 +145,11 @@ void ParticleViewer::addCube(int off)
 	solver->addObject(std::move(cube));
 }
 
+void ParticleViewer::addMesh()
+{
+
+}
+
 void ParticleViewer::drawScene()
 {
 	glEnable(GL_DEPTH_TEST);
@@ -182,4 +192,18 @@ void ParticleViewer::drawParticles(const glm::mat4& projView)
 			mParticleModelSphere->drawObj();
 		}
 	}
+
+	vec3 pos = vec3(0.0f);
+	mat4 model = mat4(1.0);
+
+	float size = 70.0f;
+	model = glm::rotate(model, 110.0f, vec3(0.0f, 1.0f, 0.0f));
+	model = glm::scale(model, vec3(size, size, size));
+	model = glm::translate(model, vec3(0, 300.0f, 0.0f)/vec3(size));
+	mModelShader->setMat4("uModel", model);
+	mModelShader->setMat3("uModelInvTr", glm::mat3(glm::transpose(glm::inverse(model))));
+	mModelShader->setVec3("color", vec3(0.0, 1.0, 1.0));
+	mModelShader->setFloat("uAlpha", 1.0f);
+
+	mCustomMesh->drawObj();
 }
