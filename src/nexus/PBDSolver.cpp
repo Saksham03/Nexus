@@ -59,8 +59,8 @@ void PBDSolver::update(float deltaTime)
 						vec3 tangential = (delta - proj);
 						float tangentialDist = glm::length(tangential);
 
-						float us = 0.05f;
-						float uk = 0.002f;
+						float us = 0.3f;
+						float uk = 0.2f;
 
 						float staticFric = glm::length(delta) * us;
 						delta = /*particle->invMass **/ tangential;

@@ -240,7 +240,7 @@ void ShapeMatchingConstraint::extractRotation(const Matrix3d& A, Quaterniond& q,
 
 
 BendingConstraint::BendingConstraint(Particle* p1, Particle* p2, Particle* p3, Particle* p4, float t)
-	:Constraint(0.7f, CONSTRAINT_TYPE::EQUALITY), p1(p1), p2(p2), p3(p3), p4(p4), threshold(t)
+	:Constraint(1.f, CONSTRAINT_TYPE::EQUALITY), p1(p1), p2(p2), p3(p3), p4(p4), threshold(t)
 {}
 
 BendingConstraint::~BendingConstraint()
