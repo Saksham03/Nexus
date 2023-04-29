@@ -154,15 +154,7 @@ ShapeMatchingConstraint::ShapeMatchingConstraint(std::vector<Particle*> particle
 	: Constraint(stiffness, CONSTRAINT_TYPE::EQUALITY), particles(particles), prevRot(Quaterniond::Identity())
 {
 	// store rest configuration
-	com_rest = vec3(0.0f);
-	float sumMass = 0.0f;
-	for (auto& particle : particles)
-	{
-		com_rest += particle->mass * particle->x;
-		restPos.push_back(particle->x);
-		sumMass += particle->mass;
-	}
-	com_rest /= sumMass;
+	com_rest = getCurrentCOM();
 
 	for (auto& particle : (particles))
 	{

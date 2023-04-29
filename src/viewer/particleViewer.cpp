@@ -75,7 +75,6 @@ void ParticleViewer::addBall()
 	p->radius = 40.0f;
 	p->color = vec3(1, 0, 0);
 	p->phase = -1;
-	solver->setBigBoi(std::move(p));
 	/*ball->addParticle(std::move(p));
 	ball->setLengthAndBreadth(1, 1);*/
 	//solver->addObject(std::move(ball));
@@ -118,7 +117,7 @@ void ParticleViewer::addCube(int off)
 
 	int phase = NexusObject::getObjectID();
 
-	uPtr<NexusRigidBody> cube = mkU<NexusRigidBody>();
+	uPtr<NexusRigidBody> cube = mkU<NexusRigidBody>(1.0f);
 	vec3 offset(50 + off * 50, 200 + off*100, 50 );
 	mat3 rot = mat3(-0.9036922, 0.0000000, -0.4281827,
 	-0.3909073, 0.4080821, 0.8250215,
@@ -127,7 +126,13 @@ void ParticleViewer::addCube(int off)
 	for (int i = 0; i < BREADTH; i++) {
 		for (int j = 0; j < LENGTH; j++) {
 			for (int k = 0; k < HEIGHT; k++) {
-				float mass = 10.0f;
+				if (i > 0 && i < BREADTH - 1 &&
+					j > 0 && j < LENGTH - 1 &&
+					k > 0 && k < HEIGHT - 1)
+				{
+					continue;
+				}
+				float mass = 2.0f;
 
 				uPtr<Particle> p = mkU<Particle>(vec3(i * 5.0f, k * 5.0f, j * 5.0f) + offset,
 												vec3(0.0f), 
@@ -186,24 +191,24 @@ void ParticleViewer::drawParticles(const glm::mat4& projView)
 			model = glm::translate(model, pos/scale);
 
 			mModelShader->setMat4("uModel", model);
-			mModelShader->setMat3("uModelInvTr", glm::mat3(glm::transpose(glm::inverse(model))));
+			//mModelShader->setMat3("uModelInvTr", glm::mat3(glm::transpose(glm::inverse(model))));
 			mModelShader->setVec3("color", particle->color);
 			//mModelShader->setFloat("uAlpha", alpha);
 			mParticleModelSphere->drawObj();
 		}
 	}
 
-	vec3 pos = vec3(0.0f);
-	mat4 model = mat4(1.0);
+	//vec3 pos = vec3(0.0f);
+	//mat4 model = mat4(1.0);
 
-	float size = 70.0f;
-	model = glm::rotate(model, 110.0f, vec3(0.0f, 1.0f, 0.0f));
-	model = glm::scale(model, vec3(size, size, size));
-	model = glm::translate(model, vec3(0, 300.0f, 0.0f)/vec3(size));
-	mModelShader->setMat4("uModel", model);
-	mModelShader->setMat3("uModelInvTr", glm::mat3(glm::transpose(glm::inverse(model))));
-	mModelShader->setVec3("color", vec3(0.0, 1.0, 1.0));
-	mModelShader->setFloat("uAlpha", 1.0f);
+	//float size = 70.0f;
+	//model = glm::rotate(model, 110.0f, vec3(0.0f, 1.0f, 0.0f));
+	//model = glm::scale(model, vec3(size, size, size));
+	//model = glm::translate(model, vec3(0, 300.0f, 0.0f)/vec3(size));
+	//mModelShader->setMat4("uModel", model);
+	//mModelShader->setMat3("uModelInvTr", glm::mat3(glm::transpose(glm::inverse(model))));
+	//mModelShader->setVec3("color", vec3(0.0, 1.0, 1.0));
+	//mModelShader->setFloat("uAlpha", 1.0f);
 
-	mCustomMesh->drawObj();
+	//mCustomMesh->drawObj();
 }
