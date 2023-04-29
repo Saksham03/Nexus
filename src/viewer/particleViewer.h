@@ -1,6 +1,5 @@
 #pragma once
 #include "viewer.h"
-#include "aParticleSystem.h"
 #include "objmodel.h"
 #include "PBDSolver.h"
 #include "NexusCloth.h"
@@ -20,6 +19,7 @@ public:
 	void addBall();
 	void addCloth(int idx);
 	void addCube(int off);
+	void addMesh();
 //	virtual void createGUIWindow() override;
 //	virtual void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) override;
 
@@ -29,12 +29,12 @@ private:
 	int mParticleModelType = 0; // 0 for cube, 1 for sphere
 
 	uPtr<PBDSolver> solver;
-	AParticleSystem mParticles;
 	std::vector<Particle> nexusParticles;
 	std::vector<std::unique_ptr<Constraint>> constraints;
 
 	std::unique_ptr<ObjModel> mParticleModel;
 	std::unique_ptr<ObjModel> mParticleModelSphere;
+	uPtr<ObjModel> mCustomMesh;
 	std::unique_ptr<ObjModel> mRocketModel;
 
 	void drawParticles(const glm::mat4& projView);

@@ -13,19 +13,6 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR})
 
 # Set up libraries
 
-add_library(particle STATIC
-    ./src/animation/aParticle.h
-    ./src/animation/aParticle.cpp
-    ./src/animation/aParticleSystem.h
-    ./src/animation/aParticleSystem.cpp
-)
-
-target_include_directories(particle PUBLIC
-    ./3rdparty/eigen-3.2.8
-    ./3rdparty/glm
-    ./src/animation
-)
-
 add_library(nexus STATIC
     ./src/nexus/Particle.h
     ./src/nexus/Constraint.h
@@ -44,8 +31,8 @@ add_library(nexus STATIC
 )
 
 target_include_directories(nexus PUBLIC
-    ./3rdparty/eigen-3.2.8
     ./3rdparty/glm
+    ./3rdparty/eigen-3.2.8
     ./src/nexus
 )
 
@@ -95,4 +82,4 @@ target_include_directories(ParticleViewer PUBLIC
     ./3rdparty/tinyobj
 )
 
-target_link_libraries(ParticleViewer PUBLIC particle glad glfw imgui tinyobj nexus)
+target_link_libraries(ParticleViewer PUBLIC glad glfw imgui tinyobj nexus)
