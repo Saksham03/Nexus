@@ -24,3 +24,7 @@ int NexusObject::getObjectID()
 {
 	return NexusObject::lastId++;
 }
+
+void NexusObject::addStretchConstraint(Particle* p1, Particle* p2, float distance, float stiffness) {
+	constraints.push_back(mkU<StretchConstraint>(p1, p2, distance, stiffness));
+}

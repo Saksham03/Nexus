@@ -91,7 +91,7 @@ void ParticleViewer::addCloth(int idx)
 	for (int i = 0; i < BREADTH; i++) {
 		for (int j = 0; j < LENGTH; j++) {
 			float mass = 2.0f;
-			if (/*idx == 0 && */(i == 0 || i == BREADTH - 1) && (j == 0 || j == LENGTH - 1))
+			if (/*idx == 0 && (*/i == 0 /*|| i == BREADTH - 1) && (j == 0 || j == LENGTH - 1)*/)
 			{
 				mass = -1.0f;
 			}
