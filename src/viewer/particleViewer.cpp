@@ -2,6 +2,7 @@
 #include <iostream>
 #include <chrono>
 #include "tiny_obj_loader.h"
+#include "Helper.h"
 
 #define VOXELIZER_IMPLEMENTATION
 #include "voxelizer.h"
@@ -151,7 +152,7 @@ void ParticleViewer::addCube(int off)
 	solver->addObject(std::move(cube));
 }
 
-vx_mesh_t* Voxelize(const char* filename, float voxelsizex, float voxelsizey, float voxelsizez, float precision)
+vx_mesh_t* LoadFromFileAndVoxelize(const char* filename, float voxelsizex, float voxelsizey, float voxelsizez, float precision)
 {
 	tinyobj::attrib_t attrib;
 	std::vector<tinyobj::shape_t> shapes;
@@ -159,7 +160,6 @@ vx_mesh_t* Voxelize(const char* filename, float voxelsizex, float voxelsizey, fl
 	std::string warn;
 	std::string err;
 	bool ret = tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, filename);
-
 	if (!err.empty()) {
 		printf("err: %s\n", err.c_str());
 	}
@@ -175,38 +175,21 @@ vx_mesh_t* Voxelize(const char* filename, float voxelsizex, float voxelsizey, fl
 	}
 
 	// Only use first shape.
+	std::vector<int> indices;
+	for (tinyobj::index_t idxs : shapes[0].mesh.indices)
 	{
-		vx_mesh_t* mesh;
-		vx_mesh_t* voxelizedMesh;
-
-		mesh = vx_mesh_alloc(attrib.vertices.size(), shapes[0].mesh.indices.size());
-
-		for (size_t f = 0; f < shapes[0].mesh.indices.size(); f++) {
-			mesh->indices[f] = shapes[0].mesh.indices[f].vertex_index;
-		}
-
-		for (size_t v = 0; v < attrib.vertices.size() / 3; v++) {
-			mesh->vertices[v].x = attrib.vertices[3 * v + 0];
-			mesh->vertices[v].y = attrib.vertices[3 * v + 1];
-			mesh->vertices[v].z = attrib.vertices[3 * v + 2];
-		}
-
-		voxelizedMesh = vx_voxelize(mesh, voxelsizex, voxelsizey, voxelsizez, precision);
-
-		printf("Number of vertices: %ld\n", voxelizedMesh->nvertices);
-		printf("Number of indices: %ld\n", voxelizedMesh->nindices);
-
-		return voxelizedMesh;
+		indices.push_back(idxs.vertex_index);
 	}
+	return Helper::Voxelize(attrib.vertices, indices, voxelsizex, voxelsizey, voxelsizez, precision);
 }
 
 void ParticleViewer::addMesh()
 {
 	mCustomMesh = mkU<ObjModel>();
-	mCustomMesh->loadObj("../obj/cow.obj");
+	mCustomMesh->loadObj("../obj/calavera.obj");
 	
 	vx_mesh_t* voxelPtr;
-	voxelPtr = Voxelize("../obj/cow.obj", FIXED_PARTICLE_SIZE * 0.1f, FIXED_PARTICLE_SIZE * 0.1f, FIXED_PARTICLE_SIZE * 0.1f, 0.01f);
+	voxelPtr = LoadFromFileAndVoxelize("../obj/calavera.obj", FIXED_PARTICLE_SIZE * 0.1f, FIXED_PARTICLE_SIZE * 0.1f, FIXED_PARTICLE_SIZE * 0.1f, 0.01f);
 
 	int phase = NexusObject::getObjectID();
 

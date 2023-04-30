@@ -26,3 +26,8 @@ void NexusRigidBody::preComputeConstraints()
 
 	constraints.push_back(mkU<ShapeMatchingConstraint>(ps, stiffness));
 }
+
+const mat4& NexusRigidBody::getCurrentTransformation() const
+{
+	return currTransformMat;
+}

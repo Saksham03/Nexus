@@ -28,6 +28,8 @@ add_library(nexus STATIC
     ./src/nexus/defines.h
     ./src/nexus/SpatialHash.h
     ./src/nexus/SpatialHash.cpp
+    ./src/nexus/Helper.h
+    ./src/nexus/Helper.cpp
 )
 
 target_include_directories(nexus PUBLIC

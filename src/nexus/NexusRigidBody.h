@@ -12,7 +12,7 @@ private:
 	float stiffness;
 
 	float LENGTH, BREADTH, HEIGHT;	// we're assuming a cube rb only right now. TODO: allow arbitrary meshes
-
+	mat4 currTransformMat;
 public:
 	NexusRigidBody();
 	NexusRigidBody(float stiffness);
@@ -24,4 +24,5 @@ public:
 	~NexusRigidBody();
 	//void setLengthAndBreadth(int rows, int columns);
 	void preComputeConstraints() override;
+	const mat4& getCurrentTransformation() const;
 };
