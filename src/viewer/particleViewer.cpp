@@ -23,11 +23,11 @@ ParticleViewer::~ParticleViewer()
 
 void ParticleViewer::setupScene()
 {
-	//addRope();
-	//addCloth(0);
+	addRope();
+	addCloth(0);
 	//addCloth(1);
 	//addBall();
-	//addCube(1);
+	addCube(1);
 	//addCube(0);
 	//addCube(2);
 	//addCube(3);
