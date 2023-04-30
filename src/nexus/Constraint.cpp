@@ -154,6 +154,7 @@ ShapeMatchingConstraint::ShapeMatchingConstraint(std::vector<Particle*> particle
 	: Constraint(stiffness, CONSTRAINT_TYPE::EQUALITY), particles(particles), prevRot(Quaterniond::Identity())
 {
 	// store rest configuration
+	updateCurrentCom();
 	com_rest = getCurrentCOM();
 
 	for (auto& particle : (particles))
@@ -167,7 +168,7 @@ ShapeMatchingConstraint::~ShapeMatchingConstraint()
 
 void ShapeMatchingConstraint::projectConstraint()
 {
-	vec3 currCOM = getCurrentCOM();
+	updateCurrentCom();
 
 	// covariance matrix A
 	Matrix3d A;
@@ -184,13 +185,15 @@ void ShapeMatchingConstraint::projectConstraint()
 
 	extractRotation(A, prevRot, 2);
 	Matrix3d R = prevRot.matrix();
+	shapeMatchingMat = mat3();
+	shapeMatchingMat[0][0] = R(0, 0);  shapeMatchingMat[0][1] = R(0, 1); shapeMatchingMat[0][2] = R(0, 2);
+	shapeMatchingMat[1][0] = R(1, 0);  shapeMatchingMat[1][1] = R(1, 1); shapeMatchingMat[1][2] = R(1, 2);
+	shapeMatchingMat[2][0] = R(2, 0);  shapeMatchingMat[2][1] = R(2, 1); shapeMatchingMat[2][2] = R(2, 2);
+	shapeMatchingMat = glm::transpose(shapeMatchingMat);
 	for (int i = 0; i < particles.size(); i++)
 	{
 		Particle* particle = particles[i];
-		Vector3d qi(q[i][0], q[i][1], q[i][2]);
-		qi = R * qi;
-		vec3 gi(qi(0), qi(1), qi(2));
-		vec3 g = gi + currCOM;
+		vec3 g = shapeMatchingMat * q[i] + currCOM;
 
 		vec3 C = (g - particle->x) * stiffness;
 
@@ -198,17 +201,16 @@ void ShapeMatchingConstraint::projectConstraint()
 	}
 }
 
-vec3 ShapeMatchingConstraint::getCurrentCOM() const
+void ShapeMatchingConstraint::updateCurrentCom()
 {
-	vec3 com = vec3(0.0);
+	currCOM = vec3(0.0);
 	float sumMass = 0.0f;
 	for (auto& particle : particles)
 	{
-		com += particle->mass * particle->x;
+		currCOM += particle->mass * particle->x;
 		sumMass += particle->mass;
 	}
-	com /= sumMass;
-	return com;
+	currCOM /= sumMass;
 }
 
 void ShapeMatchingConstraint::extractRotation(const Matrix3d& A, Quaterniond& q, const unsigned int maxIter) const
@@ -229,6 +231,17 @@ void ShapeMatchingConstraint::extractRotation(const Matrix3d& A, Quaterniond& q,
 		q.normalize();
 	}
 }
+
+const mat3& ShapeMatchingConstraint::getShapeMatchingMatrix() const
+{
+	return shapeMatchingMat;
+}
+
+const vec3& ShapeMatchingConstraint::getCurrentCOM() const
+{
+	return currCOM;
+}
+
 #pragma endregion
 
 

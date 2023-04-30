@@ -76,15 +76,18 @@ class ShapeMatchingConstraint : public Constraint
 private:
     std::vector<Particle*> particles;
     vec3 com_rest;                  	// center of mass at rest
-    std::vector<vec3> restPos;          // vector of rest positions (rest configuration) of particles
     std::vector<vec3> q;                // rest config positions - rest center of mass positions
     Quaterniond prevRot;
-    vec3 getCurrentCOM() const;
+    vec3 currCOM;
+    mat3 shapeMatchingMat;
+    void updateCurrentCom();
     void extractRotation(const Matrix3d& A, Quaterniond& q, const unsigned int maxIter) const;
 public:
     ShapeMatchingConstraint(std::vector<Particle*> particles, float stiffness = 1.0f);
     ~ShapeMatchingConstraint();
     void projectConstraint() override;
+    const vec3& getCurrentCOM() const;
+    const mat3& getShapeMatchingMatrix() const;
 };
 
 class BendingConstraint : public Constraint

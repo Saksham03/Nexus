@@ -1,6 +1,6 @@
 #include "Helper.h"
 
-vx_mesh_t* Helper::Voxelize(std::vector<float> vertices, std::vector<int> indices, float voxelsizex, float voxelsizey, float voxelsizez, float precision)
+vx_mesh_t* Helper::Voxelize(std::vector<vec3> vertices, std::vector<int> indices, float voxelsizex, float voxelsizey, float voxelsizez, float precision)
 {
 	vx_mesh_t* mesh;
 	vx_mesh_t* voxelizedMesh;
@@ -11,10 +11,10 @@ vx_mesh_t* Helper::Voxelize(std::vector<float> vertices, std::vector<int> indice
 		mesh->indices[f] = indices[f];
 	}
 
-	for (size_t v = 0; v < vertices.size() / 3; v++) {
-		mesh->vertices[v].x = vertices[3 * v + 0];
-		mesh->vertices[v].y = vertices[3 * v + 1];
-		mesh->vertices[v].z = vertices[3 * v + 2];
+	for (size_t v = 0; v < vertices.size(); v++) {
+		mesh->vertices[v].x = vertices[v].x;
+		mesh->vertices[v].y = vertices[v].y;
+		mesh->vertices[v].z = vertices[v].z;
 	}
 
 	voxelizedMesh = vx_voxelize(mesh, voxelsizex, voxelsizey, voxelsizez, precision);

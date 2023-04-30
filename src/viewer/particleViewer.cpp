@@ -92,7 +92,7 @@ void ParticleViewer::addCloth(int idx)
 	for (int i = 0; i < BREADTH; i++) {
 		for (int j = 0; j < LENGTH; j++) {
 			float mass = 2.0f;
-			if (/*idx == 0 && (*/i == 0 /*|| i == BREADTH - 1) && (j == 0 || j == LENGTH - 1)*/)
+			if (idx == 0 && (i == 0 || i == BREADTH - 1) && (j == 0 || j == LENGTH - 1))
 			{
 				mass = -1.0f;
 			}
@@ -152,7 +152,7 @@ void ParticleViewer::addCube(int off)
 	solver->addObject(std::move(cube));
 }
 
-vx_mesh_t* LoadFromFileAndVoxelize(const char* filename, float voxelsizex, float voxelsizey, float voxelsizez, float precision)
+vx_mesh_t* LoadFromFileAndVoxelize(const char* filename, float voxelsizex, float voxelsizey, float voxelsizez, float precision, std::vector<vec3> &verts)
 {
 	tinyobj::attrib_t attrib;
 	std::vector<tinyobj::shape_t> shapes;
@@ -180,16 +180,22 @@ vx_mesh_t* LoadFromFileAndVoxelize(const char* filename, float voxelsizex, float
 	{
 		indices.push_back(idxs.vertex_index);
 	}
-	return Helper::Voxelize(attrib.vertices, indices, voxelsizex, voxelsizey, voxelsizez, precision);
+
+	for (size_t v = 0; v < attrib.vertices.size() / 3; v++) {
+		vec3 vert(attrib.vertices[3 * v + 0], attrib.vertices[3 * v + 1], attrib.vertices[3 * v + 2]);
+		verts.push_back(vert);
+	}
+	return Helper::Voxelize(verts, indices, voxelsizex, voxelsizey, voxelsizez, precision);
 }
 
 void ParticleViewer::addMesh()
 {
 	mCustomMesh = mkU<ObjModel>();
-	mCustomMesh->loadObj("../obj/calavera.obj");
+	mCustomMesh->loadObj("../obj/cube.obj");
 	
 	vx_mesh_t* voxelPtr;
-	voxelPtr = LoadFromFileAndVoxelize("../obj/calavera.obj", FIXED_PARTICLE_SIZE * 0.1f, FIXED_PARTICLE_SIZE * 0.1f, FIXED_PARTICLE_SIZE * 0.1f, 0.01f);
+	std::vector<vec3> verts;
+	voxelPtr = LoadFromFileAndVoxelize("../obj/cube.obj", FIXED_PARTICLE_SIZE * 0.1f, FIXED_PARTICLE_SIZE * 0.1f, FIXED_PARTICLE_SIZE * 0.1f, 0.01f, verts);
 
 	int phase = NexusObject::getObjectID();
 
@@ -201,7 +207,6 @@ void ParticleViewer::addMesh()
 		vec3 pos = vec3(v.x, v.y, v.z);
 
 		float mass = 2.0f;
-
 		uPtr<Particle> p = mkU<Particle>(mat3(FIXED_PARTICLE_SIZE *6.0f) * pos + offset,
 			vec3(0.0f),
 			phase,
@@ -212,6 +217,12 @@ void ParticleViewer::addMesh()
 		rb->addParticle(std::move(p));
 	}
 
+	for (int i = 0; i < verts.size(); i++)
+	{
+		verts[i] = mat3(FIXED_PARTICLE_SIZE * 6.0f) * verts[i] + offset;
+	}
+
+	rb->setOriginalVerts(verts);
 	solver->addObject(std::move(rb));
 }
 
@@ -242,19 +253,42 @@ void ParticleViewer::drawParticles(const glm::mat4& projView)
 
 	for (auto& obj : solver->getObjects())
 	{
-		for (auto& particle : obj->getParticles())
+		NexusRigidBody* rb = dynamic_cast<NexusRigidBody*>(obj.get());
+		if (rb != nullptr)
 		{
-			glm::vec3 pos = particle->x;
-			glm::mat4 model = glm::mat4(1.0f);
-			vec3 scale = glm::vec3(particle->radius);
-			model = glm::scale(model, scale);
-			model = glm::translate(model, pos/scale);
+			vec3 offset = vec3(50.0f, 200.0f, 50.0f);
 
-			mModelShader->setMat4("uModel", model);
-			//mModelShader->setMat3("uModelInvTr", glm::mat3(glm::transpose(glm::inverse(model))));
-			mModelShader->setVec3("color", particle->color);
-			//mModelShader->setFloat("uAlpha", 0.5f);
-			mParticleModelSphere->drawObj();
+			for (auto pos : rb->getMovedVertices())
+			{
+				vec3 p = mat3(FIXED_PARTICLE_SIZE * 6.0f) * pos + offset;
+				glm::mat4 model = glm::mat4(1.0f);
+				vec3 scale = glm::vec3(FIXED_PARTICLE_SIZE);
+				model = glm::scale(model, scale);
+				model = glm::translate(model, pos / scale);
+
+				mModelShader->setMat4("uModel", model);
+				//mModelShader->setMat3("uModelInvTr", glm::mat3(glm::transpose(glm::inverse(model))));
+				mModelShader->setVec3("color", vec3(1,1,0));
+				//mModelShader->setFloat("uAlpha", 0.5f);
+				mParticleModelSphere->drawObj();
+			}
+		}
+		else
+		{
+			for (auto& particle : obj->getParticles())
+			{
+				glm::vec3 pos = particle->x;
+				glm::mat4 model = glm::mat4(1.0f);
+				vec3 scale = glm::vec3(particle->radius);
+				model = glm::scale(model, scale);
+				model = glm::translate(model, pos / scale);
+
+				mModelShader->setMat4("uModel", model);
+				//mModelShader->setMat3("uModelInvTr", glm::mat3(glm::transpose(glm::inverse(model))));
+				mModelShader->setVec3("color", particle->color);
+				//mModelShader->setFloat("uAlpha", 0.5f);
+				mParticleModelSphere->drawObj();
+			}
 		}
 	}
 
