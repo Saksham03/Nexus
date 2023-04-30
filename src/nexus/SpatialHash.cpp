@@ -44,27 +44,28 @@ void SpatialHash::insertParticle(Particle* p)
 	}
 	particleMap[key].push_back(p);
 
-	//std::unordered_set<int64_t> hashes;
+	std::unordered_set<int64_t> hashes;
 
-	//for (int idx = 0; idx < 3; idx++)
-	//{
-	//	// insert into all 6 cardinal directions
-	//	for (int i = -1; i < 2; i+=2)
-	//	{
-	//		vec3 pos(0.0f);
-	//		pos[idx] += i * p->radius;
+	for (int idx = 0; idx < 3; idx++)
+	{
+		// insert into all 6 cardinal directions
+		// TODO: check diagonals also
+		for (int i = -1; i < 2; i+=2)
+		{
+			vec3 pos(0.0f);
+			pos[idx] += i * p->radius;
 
-	//		key = toKey(p->x + pos);
-	//		if (hashes.find(key) == hashes.end())
-	//		{
-	//			if (!hasGridAt(key))
-	//			{
-	//				particleMap[key] = std::vector<Particle*>();
-	//			}
-	//			particleMap[key].push_back(p);
-	//		}
-	//	}
-	//}
+			key = toKey(p->x + pos);
+			if (hashes.find(key) == hashes.end())
+			{
+				if (!hasGridAt(key))
+				{
+					particleMap[key] = std::vector<Particle*>();
+				}
+				particleMap[key].push_back(p);
+			}
+		}
+	}
 }
 
 

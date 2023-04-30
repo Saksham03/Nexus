@@ -22,6 +22,7 @@ public:
 	~NexusObject();
 
 	void addParticle(uPtr<Particle> p);
+	void addStretchConstraint(Particle* p1, Particle* p2, float distance, float stiffness);
 	const std::vector<uPtr<Particle>>& getParticles() const;
 	virtual void preComputeConstraints() = 0;
 	static int getObjectID();

@@ -19,6 +19,7 @@ public:
 	void addBall();
 	void addCloth(int idx);
 	void addCube(int off);
+	void addMesh();
 //	virtual void createGUIWindow() override;
 //	virtual void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) override;
 
@@ -33,6 +34,7 @@ private:
 
 	std::unique_ptr<ObjModel> mParticleModel;
 	std::unique_ptr<ObjModel> mParticleModelSphere;
+	uPtr<ObjModel> mCustomMesh;
 	std::unique_ptr<ObjModel> mRocketModel;
 
 	void drawParticles(const glm::mat4& projView);

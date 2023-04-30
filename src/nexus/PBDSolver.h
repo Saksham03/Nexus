@@ -14,8 +14,6 @@ private:
 	std::unordered_set<std::pair<Particle*, Particle*>, PairHash> alreadyCheckedCollisions;
 
 	SpatialHash particleHash;
-
-	uPtr<Particle> pBigBoi;
 	
 public:
 	PBDSolver();
@@ -28,5 +26,4 @@ public:
 	void generateSpatialHash();
 	void generateCollisions();
 	const std::vector<uPtr<NexusObject>>& getObjects() const;
-	void setBigBoi(uPtr<Particle>&& p);
 };
