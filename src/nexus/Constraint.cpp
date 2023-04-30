@@ -182,7 +182,7 @@ void ShapeMatchingConstraint::projectConstraint()
 		A(2, 0) += p[2] * q[i][0];	A(2, 1) += p[2] * q[i][1];	A(2, 2) += p[2] * q[i][2];
 	}
 
-	extractRotation(A, prevRot, 5);
+	extractRotation(A, prevRot, 2);
 	Matrix3d R = prevRot.matrix();
 	for (int i = 0; i < particles.size(); i++)
 	{
@@ -193,6 +193,7 @@ void ShapeMatchingConstraint::projectConstraint()
 		vec3 g = gi + currCOM;
 
 		vec3 C = (g - particle->x) * stiffness;
+
 		particle->x += C;
 	}
 }

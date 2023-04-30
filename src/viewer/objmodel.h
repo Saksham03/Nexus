@@ -3,6 +3,8 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include "drawable.h"
+#include <voxelizer.h>
+#include "defines.h"
 #include <memory>
 
 // Only support triangle mesh now
@@ -15,7 +17,7 @@ public:
 
 	// This function should be called after the initialization of OpenGL
 	bool loadObj(const std::string& filename);
-
+	bool loadObj(uPtr<vx_mesh_t> voxelizedMesh);
 	void drawObj();
 
 private:

@@ -3,6 +3,9 @@
 #include <chrono>
 #include "tiny_obj_loader.h"
 
+#define VOXELIZER_IMPLEMENTATION
+#include "voxelizer.h"
+
 ParticleViewer::ParticleViewer(const std::string& name) :
 	Viewer(name),
 	solver(mkU<PBDSolver>())
@@ -10,8 +13,6 @@ ParticleViewer::ParticleViewer(const std::string& name) :
 	clearColor = ImVec4(0.8f, 0.8f, 0.8f, 1.00f);
 	mParticleModelSphere = std::make_unique<ObjModel>();
 	mParticleModelSphere->loadObj("../obj/sphere.obj");
-	mCustomMesh = mkU<ObjModel>();
-	mCustomMesh->loadObj("../obj/calavera.obj");
 	setupScene();
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -23,10 +24,10 @@ ParticleViewer::~ParticleViewer()
 
 void ParticleViewer::setupScene()
 {
-	//addRope();
-	//addCloth(0);
+	addRope();
+	addCloth(0);
 	//addCloth(1);
-	//addBall();
+	addBall();
 	//addCube(1);
 	//addCube(0);
 	//addCube(2);
@@ -111,9 +112,9 @@ void ParticleViewer::addCloth(int idx)
 
 void ParticleViewer::addCube(int off)
 {
-	int LENGTH = 5;
-	int BREADTH = 5;
-	int HEIGHT = 5;
+	int LENGTH = 9;
+	int BREADTH = 9;
+	int HEIGHT = 9;
 
 	int phase = NexusObject::getObjectID();
 
@@ -150,9 +151,85 @@ void ParticleViewer::addCube(int off)
 	solver->addObject(std::move(cube));
 }
 
+vx_mesh_t* Voxelize(const char* filename, float voxelsizex, float voxelsizey, float voxelsizez, float precision)
+{
+	tinyobj::attrib_t attrib;
+	std::vector<tinyobj::shape_t> shapes;
+	std::vector<tinyobj::material_t> materials;
+	std::string warn;
+	std::string err;
+	bool ret = tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, filename);
+
+	if (!err.empty()) {
+		printf("err: %s\n", err.c_str());
+	}
+
+	if (!ret) {
+		printf("failed to load : %s\n", filename);
+		return nullptr;
+	}
+
+	if (shapes.size() == 0) {
+		printf("err: # of shapes are zero.\n");
+		return nullptr;
+	}
+
+	// Only use first shape.
+	{
+		vx_mesh_t* mesh;
+		vx_mesh_t* voxelizedMesh;
+
+		mesh = vx_mesh_alloc(attrib.vertices.size(), shapes[0].mesh.indices.size());
+
+		for (size_t f = 0; f < shapes[0].mesh.indices.size(); f++) {
+			mesh->indices[f] = shapes[0].mesh.indices[f].vertex_index;
+		}
+
+		for (size_t v = 0; v < attrib.vertices.size() / 3; v++) {
+			mesh->vertices[v].x = attrib.vertices[3 * v + 0];
+			mesh->vertices[v].y = attrib.vertices[3 * v + 1];
+			mesh->vertices[v].z = attrib.vertices[3 * v + 2];
+		}
+
+		voxelizedMesh = vx_voxelize(mesh, voxelsizex, voxelsizey, voxelsizez, precision);
+
+		printf("Number of vertices: %ld\n", voxelizedMesh->nvertices);
+		printf("Number of indices: %ld\n", voxelizedMesh->nindices);
+
+		return voxelizedMesh;
+	}
+}
+
 void ParticleViewer::addMesh()
 {
+	mCustomMesh = mkU<ObjModel>();
+	mCustomMesh->loadObj("../obj/cow.obj");
+	
+	vx_mesh_t* voxelPtr;
+	voxelPtr = Voxelize("../obj/cow.obj", FIXED_PARTICLE_SIZE * 0.1f, FIXED_PARTICLE_SIZE * 0.1f, FIXED_PARTICLE_SIZE * 0.1f, 0.01f);
 
+	int phase = NexusObject::getObjectID();
+
+	uPtr<NexusRigidBody> rb = mkU<NexusRigidBody>(0.05f);
+	vec3 offset = vec3(50.0f, 200.0f,50.0f);
+	for (int i = 0; i < voxelPtr->nvertices; i++)
+	{
+		vx_vertex_t v = voxelPtr->vertices[i];
+		vec3 pos = vec3(v.x, v.y, v.z);
+
+		float mass = 2.0f;
+
+		uPtr<Particle> p = mkU<Particle>(mat3(FIXED_PARTICLE_SIZE *6.0f) * pos + offset,
+			vec3(0.0f),
+			phase,
+			mass,
+			FIXED_PARTICLE_SIZE,
+			vec3(1, 1, 1));
+
+		rb->addParticle(std::move(p));
+	}
+
+	solver->addObject(std::move(rb));
 }
 
 void ParticleViewer::drawScene()
@@ -193,7 +270,7 @@ void ParticleViewer::drawParticles(const glm::mat4& projView)
 			mModelShader->setMat4("uModel", model);
 			//mModelShader->setMat3("uModelInvTr", glm::mat3(glm::transpose(glm::inverse(model))));
 			mModelShader->setVec3("color", particle->color);
-			//mModelShader->setFloat("uAlpha", alpha);
+			//mModelShader->setFloat("uAlpha", 0.5f);
 			mParticleModelSphere->drawObj();
 		}
 	}
