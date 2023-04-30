@@ -100,6 +100,49 @@ bool ObjModel::loadObj(const std::string & filename)
 	return true;
 }
 
+bool ObjModel::loadObj(uPtr<vx_mesh_t> voxelizedMesh)
+{
+	std::unique_ptr<Drawable> drawable = std::make_unique<Drawable>();
+	drawable->elementCount = voxelizedMesh->nindices;
+	std::vector<glm::vec3> vertexBuffer; // pos, normal interleaved
+	return true;
+	//for (size_t f = 0; f < drawable->elementCount / 3; ++f)
+	//{
+	//	int idx0 = voxelizedMesh-> indices[3 * f + 0].vertex_index;
+	//	int idx1 = shapes[s].mesh.indices[3 * f + 1].vertex_index;
+	//	int idx2 = shapes[s].mesh.indices[3 * f + 2].vertex_index;
+	//	glm::vec3 pos0 = glm::vec3(attrib.vertices[3 * idx0 + 0], attrib.vertices[3 * idx0 + 1], attrib.vertices[3 * idx0 + 2]);
+	//	glm::vec3 pos1 = glm::vec3(attrib.vertices[3 * idx1 + 0], attrib.vertices[3 * idx1 + 1], attrib.vertices[3 * idx1 + 2]);
+	//	glm::vec3 pos2 = glm::vec3(attrib.vertices[3 * idx2 + 0], attrib.vertices[3 * idx2 + 1], attrib.vertices[3 * idx2 + 2]);
+
+	//	glm::vec3 nor0, nor1, nor2;
+	//	if (hasNormal)
+	//	{
+	//		idx0 = shapes[s].mesh.indices[3 * f + 0].normal_index;
+	//		idx1 = shapes[s].mesh.indices[3 * f + 1].normal_index;
+	//		idx2 = shapes[s].mesh.indices[3 * f + 2].normal_index;
+	//		nor0 = glm::vec3(attrib.normals[3 * idx0 + 0], attrib.normals[3 * idx0 + 1], attrib.normals[3 * idx0 + 2]);
+	//		nor1 = glm::vec3(attrib.normals[3 * idx1 + 0], attrib.normals[3 * idx1 + 1], attrib.normals[3 * idx1 + 2]);
+	//		nor2 = glm::vec3(attrib.normals[3 * idx2 + 0], attrib.normals[3 * idx2 + 1], attrib.normals[3 * idx2 + 2]);
+	//	}
+	//	else
+	//	{
+	//		// Calculate normal
+	//		glm::vec3 nor = glm::normalize(glm::cross(pos1 - pos0, pos2 - pos0));
+	//		nor0 = nor1 = nor2 = nor;
+	//	}
+
+	//	//glm::vec3 col = glm::vec3(0, 0, 1);
+
+	//	vertexBuffer.push_back(pos0);
+	//	vertexBuffer.push_back(nor0);
+	//	vertexBuffer.push_back(pos1);
+	//	vertexBuffer.push_back(nor1);
+	//	vertexBuffer.push_back(pos2);
+	//	vertexBuffer.push_back(nor2);
+	//}
+}
+
 void ObjModel::drawObj()
 {
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);

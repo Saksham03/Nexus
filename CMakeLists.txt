@@ -28,11 +28,14 @@ add_library(nexus STATIC
     ./src/nexus/defines.h
     ./src/nexus/SpatialHash.h
     ./src/nexus/SpatialHash.cpp
+    ./src/nexus/Helper.h
+    ./src/nexus/Helper.cpp
 )
 
 target_include_directories(nexus PUBLIC
     ./3rdparty/glm
     ./3rdparty/eigen-3.2.8
+    ./3rdparty/voxelizer
     ./src/nexus
 )
 
@@ -80,6 +83,7 @@ target_include_directories(ParticleViewer PUBLIC
     ./3rdparty/imgui-1.77
     ./3rdparty/glm
     ./3rdparty/tinyobj
+    ./3rdparty/voxelizer
 )
 
 target_link_libraries(ParticleViewer PUBLIC glad glfw imgui tinyobj nexus)
