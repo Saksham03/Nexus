@@ -10,8 +10,9 @@ NexusRigidBody::NexusRigidBody(float stiffness)
 
 NexusRigidBody::NexusRigidBody(std::vector<uPtr<Particle>> particles, float stiffness)
 	: NexusObject(NEXUS_OBJECT_TYPE::RIGIDBODY, std::move(particles)), stiffness(stiffness),
-	originalVertexPositions()
+	originalVertexPositions(), currTransformMat(mat3()), smC(nullptr)
 {}
+
 
 NexusRigidBody::~NexusRigidBody()
 {}
