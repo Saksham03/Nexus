@@ -15,7 +15,7 @@ typedef glm::mat4 mat4;
 #define NUM_SOLVER_SUBSTEPS 1
 #define NUM_SOLVER_ITERATIONS 5
 #define FIXED_TIMESTEP 0.02f    // roughly equivalent to 50 FPS, same as Unity
-#define FIXED_PARTICLE_SIZE 2.5f
+#define FIXED_PARTICLE_SIZE 0.25f
 #define SPATIAL_HASH_GRID_SIZE (4.0 * FIXED_PARTICLE_SIZE)
 
 /// <summary>
