@@ -30,6 +30,8 @@ void NexusObject::addStretchConstraint(Particle* p1, Particle* p2, float distanc
 }
 
 void NexusObject::fixParticle(Particle* p) {
-	p->mass = -1.f;
-	p->invMass = 0.f;
+	//p->mass = -1.f;
+	//p->invMass = 0.f;
+	std::unique_ptr<DistanceConstraint> d1 = std::make_unique<DistanceConstraint>(p, p->x, 0.f);
+	constraints.push_back(std::move(d1));
 }
