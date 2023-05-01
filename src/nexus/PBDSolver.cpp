@@ -39,12 +39,12 @@ void PBDSolver::update(float deltaTime)
 			{
 				for (auto& c : collConstraints)
 				{
-					c->projectConstraint();
+					c->projectConstraint(i);
 				}
 
 				for (auto& c : obj->constraints)
 				{
-					c->projectConstraint();	// solve constraints
+					c->projectConstraint(i);	// solve constraints
 				}
 
 				for (auto& particle : obj->particles)

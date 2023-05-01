@@ -30,13 +30,13 @@ DistanceConstraint::DistanceConstraint(Particle* p, glm::vec3 ref, float r, floa
 DistanceConstraint::~DistanceConstraint()
 {}
 
-void DistanceConstraint::projectConstraint() {
+void DistanceConstraint::projectConstraint(float iteration) {
 	float dist = glm::distance(p->x, ref);
 	function = dist - radius;
 	if (!isConstraintSatisfied()) {
 		glm::vec3 C = glm::normalize(p->x - ref);
 		glm::vec3 deltaX = -function * C;
-		p->x += stiffness * deltaX;
+		p->x += (1 - pow(1 - stiffness, 1.0f/iteration)) * deltaX;
 	}
 }
 
@@ -47,7 +47,7 @@ StretchConstraint::StretchConstraint(Particle* p1, Particle* p2, float t, float 
 StretchConstraint::~StretchConstraint()
 {}
 
-void StretchConstraint::projectConstraint() {
+void StretchConstraint::projectConstraint(float iteration) {
 	float dist = glm::distance(p1->x, p2->x);	
 	function = dist - threshold;
 	if (!isConstraintSatisfied()) {
@@ -58,8 +58,8 @@ void StretchConstraint::projectConstraint() {
 		float lambda = -function / (w1 + w2);
 		glm::vec3 deltaX1 = lambda * w1 * C1;
 		glm::vec3 deltaX2 = lambda * w2 * C2;
-		p1->x += stiffness * deltaX1;
-		p2->x += stiffness * deltaX2;
+		p1->x += (1 - pow(1 - stiffness, 1.0f / iteration)) * deltaX1;
+		p2->x += (1 - pow(1 - stiffness, 1.0f / iteration)) * deltaX2;
 	}
 }
 
@@ -75,7 +75,7 @@ ParticleParticleCollisionConstraint::ParticleParticleCollisionConstraint(Particl
 ParticleParticleCollisionConstraint::~ParticleParticleCollisionConstraint()
 {}
 
-void ParticleParticleCollisionConstraint::projectConstraint()
+void ParticleParticleCollisionConstraint::projectConstraint(float iteration)
 {
 	vec3 dir = p2->x - p1->x;
 	float dist = glm::length(dir);
@@ -105,8 +105,8 @@ void ParticleParticleCollisionConstraint::projectConstraint()
 		glm::vec3 deltaX1 = lambda * w1 * C1;
 		glm::vec3 deltaX2 = lambda * w2 * C2;
 
-		p1->x += deltaX1 * stiffness;
-		p2->x += deltaX2 * stiffness;
+		p1->x += deltaX1 * (1 - pow(1 - stiffness, 1.0f / iteration));
+		p2->x += deltaX2 * (1 - pow(1 - stiffness, 1.0f / iteration));
 
 		// TODO: fix friction
 		vec3 relativeDisplacement = (p2->x - p2->prevX) - (p1->x - p1->prevX);
@@ -158,8 +158,10 @@ ShapeMatchingConstraint::ShapeMatchingConstraint(std::vector<Particle*> particle
 	updateCurrentCom();
 	com_rest = getCurrentCOM();
 
+
 	for (auto& particle : (particles))
 	{
+		particle->x -= (particle->x - com_rest) * FIXED_PARTICLE_SIZE * 0.70f;
 		q.push_back(particle->x - com_rest);
 	}
 }
@@ -167,7 +169,7 @@ ShapeMatchingConstraint::ShapeMatchingConstraint(std::vector<Particle*> particle
 ShapeMatchingConstraint::~ShapeMatchingConstraint()
 {}
 
-void ShapeMatchingConstraint::projectConstraint()
+void ShapeMatchingConstraint::projectConstraint(float iteration)
 {
 	updateCurrentCom();
 
@@ -198,7 +200,7 @@ void ShapeMatchingConstraint::projectConstraint()
 		Particle* particle = particles[i];
 		vec3 g = shapeMatchingMat * q[i] + currCOM;
 
-		vec3 C = (g - particle->x) * stiffness;
+		vec3 C = (g - particle->x) * (1 - pow(1 - stiffness, 1.0f / iteration));
 
 		particle->x += C;
 	}
@@ -255,7 +257,7 @@ BendingConstraint::BendingConstraint(Particle* p1, Particle* p2, Particle* p3, P
 BendingConstraint::~BendingConstraint()
 {}
 
-void BendingConstraint::projectConstraint() {
+void BendingConstraint::projectConstraint(float iteration) {
 	vec3 P2 = p2->x - p1->x;
 	vec3 P3 = p3->x - p1->x;
 	vec3 P4 = p4->x - p1->x;
@@ -291,9 +293,10 @@ void BendingConstraint::projectConstraint() {
 		vec3 deltaX3 = -p3->invMass * mulFactor * q3 / weightFactor;
 		vec3 deltaX4 = -p4->invMass * mulFactor * q4 / weightFactor;
 
-		p1->x += stiffness * deltaX1;
-		p2->x += stiffness * deltaX2;
-		p3->x += stiffness * deltaX3;
-		p4->x += stiffness * deltaX4;
+		float k = (1 - pow(1 - stiffness, 1.0f / iteration));
+		p1->x += k * deltaX1;
+		p2->x += k * deltaX2;
+		p3->x += k * deltaX3;
+		p4->x += k * deltaX4;
 	}
 }

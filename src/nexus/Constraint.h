@@ -30,7 +30,7 @@ public:
     Constraint(float, CONSTRAINT_TYPE);
     virtual ~Constraint();
     bool isConstraintSatisfied();
-    virtual void projectConstraint() = 0;
+    virtual void projectConstraint(float iteration) = 0;
 };
 
 class DistanceConstraint : public Constraint
@@ -43,7 +43,7 @@ private:
 public:
     DistanceConstraint(Particle*, glm::vec3, float, float stiffness = 1.0f);
     ~DistanceConstraint();
-    void projectConstraint() override;
+    void projectConstraint(float iteration) override;
 };
 
 class StretchConstraint : public Constraint
@@ -55,7 +55,7 @@ private:
 public:
     StretchConstraint(Particle*, Particle*, float, float stiffness = 1.0f);
     ~StretchConstraint();
-    void projectConstraint() override;
+    void projectConstraint(float iteration) override;
 };
 
 class ParticleParticleCollisionConstraint : public Constraint
@@ -66,7 +66,7 @@ private:
 public:
     ParticleParticleCollisionConstraint(Particle*, Particle*, float stiffness = 1.0f);
     ~ParticleParticleCollisionConstraint();
-    void projectConstraint() override;
+    void projectConstraint(float iteration) override;
 
     static bool areParticlesColliding(Particle*, Particle*);
 };
@@ -85,7 +85,7 @@ private:
 public:
     ShapeMatchingConstraint(std::vector<Particle*> particles, float stiffness = 1.0f);
     ~ShapeMatchingConstraint();
-    void projectConstraint() override;
+    void projectConstraint(float iteration) override;
     const vec3& getCurrentCOM() const;
     const mat3& getShapeMatchingMatrix() const;
 };
@@ -98,5 +98,5 @@ private:
 public:
     BendingConstraint(Particle*, Particle*, Particle*, Particle*, float);
     ~BendingConstraint();
-    void projectConstraint() override;
+    void projectConstraint(float iteration) override;
 };
