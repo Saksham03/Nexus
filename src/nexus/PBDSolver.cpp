@@ -189,3 +189,9 @@ const std::vector<uPtr<NexusObject>>& PBDSolver::getObjects() const
 {
 	return objects;
 }
+
+void PBDSolver::setSolverAttributes(SolverAttributes sa)
+{
+	this->solverAttributes = sa;
+}
+
