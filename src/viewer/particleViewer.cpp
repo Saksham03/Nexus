@@ -191,11 +191,11 @@ vx_point_cloud_t* LoadFromFileAndVoxelize(const char* filename, float voxelsizex
 void ParticleViewer::addMesh()
 {
 	mCustomMesh = mkU<ObjModel>();
-	mCustomMesh->loadObj("../obj/cow.obj");
+	mCustomMesh->loadObj("../obj/cube.obj");
 	
 	vx_point_cloud_t* voxelPtr;
 	std::vector<vec3> verts;
-	voxelPtr = LoadFromFileAndVoxelize("../obj/cow.obj", FIXED_PARTICLE_SIZE * 0.1f, FIXED_PARTICLE_SIZE * 0.1f, FIXED_PARTICLE_SIZE * 0.1f, 0.01f, verts);
+	voxelPtr = LoadFromFileAndVoxelize("../obj/cube.obj", FIXED_PARTICLE_SIZE * 0.1f, FIXED_PARTICLE_SIZE * 0.1f, FIXED_PARTICLE_SIZE * 0.1f, 0.01f, verts);
 
 	int phase = NexusObject::getObjectID();
 
@@ -254,7 +254,7 @@ void ParticleViewer::drawParticles(const glm::mat4& projView)
 	for (auto& obj : solver->getObjects())
 	{
 		NexusRigidBody* rb = dynamic_cast<NexusRigidBody*>(obj.get());
-		if (false && rb != nullptr)
+		if (rb != nullptr)
 		{
 			vec3 offset = vec3(50.0f, 200.0f, 50.0f);
 

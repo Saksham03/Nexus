@@ -1,5 +1,4 @@
 #pragma once
-#pragma once
 
 #include "Particle.h"
 #include "Constraint.h"
