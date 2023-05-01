@@ -12,8 +12,8 @@ typedef glm::mat4 mat4;
 
 // SOLVER RELATED DEFINES
 #define GRAVITY vec3(0.0f, -9.8f, 0.0f)
-#define NUM_SOLVER_SUBSTEPS 5
-#define NUM_SOLVER_ITERATIONS 5
+#define NUM_SOLVER_SUBSTEPS 3
+#define NUM_SOLVER_ITERATIONS 3
 #define FIXED_TIMESTEP 0.02f    // roughly equivalent to 50 FPS, same as Unity
 #define FIXED_PARTICLE_SIZE 0.25f
 #define SPATIAL_HASH_GRID_SIZE (4.0 * FIXED_PARTICLE_SIZE)

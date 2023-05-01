@@ -28,3 +28,8 @@ int NexusObject::getObjectID()
 void NexusObject::addStretchConstraint(Particle* p1, Particle* p2, float distance, float stiffness) {
 	constraints.push_back(mkU<StretchConstraint>(p1, p2, distance, stiffness));
 }
+
+void NexusObject::fixParticle(Particle* p) {
+	p->mass = -1.f;
+	p->invMass = 0.f;
+}
