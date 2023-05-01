@@ -1,9 +1,9 @@
 #include "Helper.h"
 
-vx_mesh_t* Helper::Voxelize(std::vector<vec3> vertices, std::vector<int> indices, float voxelsizex, float voxelsizey, float voxelsizez, float precision)
+vx_point_cloud_t* Helper::Voxelize(std::vector<vec3> vertices, std::vector<int> indices, float voxelsizex, float voxelsizey, float voxelsizez, float precision)
 {
 	vx_mesh_t* mesh;
-	vx_mesh_t* voxelizedMesh;
+	vx_point_cloud_t* voxelizedMesh;
 
 	mesh = vx_mesh_alloc(vertices.size(), indices.size());
 
@@ -17,10 +17,10 @@ vx_mesh_t* Helper::Voxelize(std::vector<vec3> vertices, std::vector<int> indices
 		mesh->vertices[v].z = vertices[v].z;
 	}
 
-	voxelizedMesh = vx_voxelize(mesh, voxelsizex, voxelsizey, voxelsizez, precision);
+	voxelizedMesh = vx_voxelize_pc(mesh, voxelsizex, voxelsizey, voxelsizez, precision);
 
 	printf("Number of vertices: %ld\n", voxelizedMesh->nvertices);
-	printf("Number of indices: %ld\n", voxelizedMesh->nindices);
+	//printf("Number of indices: %ld\n", voxelizedMesh->nindices);
 
 	return voxelizedMesh;
 }

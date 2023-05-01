@@ -152,7 +152,7 @@ void ParticleViewer::addCube(int off)
 	solver->addObject(std::move(cube));
 }
 
-vx_mesh_t* LoadFromFileAndVoxelize(const char* filename, float voxelsizex, float voxelsizey, float voxelsizez, float precision, std::vector<vec3> &verts)
+vx_point_cloud_t* LoadFromFileAndVoxelize(const char* filename, float voxelsizex, float voxelsizey, float voxelsizez, float precision, std::vector<vec3> &verts)
 {
 	tinyobj::attrib_t attrib;
 	std::vector<tinyobj::shape_t> shapes;
@@ -191,11 +191,11 @@ vx_mesh_t* LoadFromFileAndVoxelize(const char* filename, float voxelsizex, float
 void ParticleViewer::addMesh()
 {
 	mCustomMesh = mkU<ObjModel>();
-	mCustomMesh->loadObj("../obj/cube.obj");
+	mCustomMesh->loadObj("../obj/cow.obj");
 	
-	vx_mesh_t* voxelPtr;
+	vx_point_cloud_t* voxelPtr;
 	std::vector<vec3> verts;
-	voxelPtr = LoadFromFileAndVoxelize("../obj/cube.obj", FIXED_PARTICLE_SIZE * 0.1f, FIXED_PARTICLE_SIZE * 0.1f, FIXED_PARTICLE_SIZE * 0.1f, 0.01f, verts);
+	voxelPtr = LoadFromFileAndVoxelize("../obj/calavera.obj", FIXED_PARTICLE_SIZE * 0.1f, FIXED_PARTICLE_SIZE * 0.1f, FIXED_PARTICLE_SIZE * 0.1f, 0.01f, verts);
 
 	int phase = NexusObject::getObjectID();
 

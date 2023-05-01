@@ -7,5 +7,5 @@ class Helper
 {
 private:
 public:
-	static vx_mesh_t* Voxelize(std::vector<vec3> vertices, std::vector<int> indices, float voxelsizex, float voxelsizey, float voxelsizez, float precision);
+	static vx_point_cloud_t* Voxelize(std::vector<vec3> vertices, std::vector<int> indices, float voxelsizex, float voxelsizey, float voxelsizez, float precision);
 };
