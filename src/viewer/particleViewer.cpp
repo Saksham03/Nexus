@@ -195,7 +195,7 @@ void ParticleViewer::addMesh()
 	
 	vx_point_cloud_t* voxelPtr;
 	std::vector<vec3> verts;
-	voxelPtr = LoadFromFileAndVoxelize("../obj/calavera.obj", FIXED_PARTICLE_SIZE * 0.1f, FIXED_PARTICLE_SIZE * 0.1f, FIXED_PARTICLE_SIZE * 0.1f, 0.01f, verts);
+	voxelPtr = LoadFromFileAndVoxelize("../obj/cow.obj", FIXED_PARTICLE_SIZE * 0.1f, FIXED_PARTICLE_SIZE * 0.1f, FIXED_PARTICLE_SIZE * 0.1f, 0.01f, verts);
 
 	int phase = NexusObject::getObjectID();
 
