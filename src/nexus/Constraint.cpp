@@ -179,6 +179,8 @@ void ShapeMatchingConstraint::projectConstraint()
 		Particle* particle = particles[i];
 		vec3 p = particle->x - currCOM;
 
+		p *= particle->mass;
+
 		A(0, 0) += p[0] * q[i][0];	A(0, 1) += p[0] * q[i][1];	A(0, 2) += p[0] * q[i][2];
 		A(1, 0) += p[1] * q[i][0];	A(1, 1) += p[1] * q[i][1];	A(1, 2) += p[1] * q[i][2];
 		A(2, 0) += p[2] * q[i][0];	A(2, 1) += p[2] * q[i][1];	A(2, 2) += p[2] * q[i][2];
