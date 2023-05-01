@@ -258,7 +258,8 @@ void ParticleViewer::drawParticles(const glm::mat4& projView)
 		{
 			vec3 offset = vec3(50.0f, 200.0f, 50.0f);
 
-			for (auto pos : rb->getMovedVertices())
+			std::vector<vec3> moved = rb->getMovedVertices();
+			for (auto pos : moved)
 			{
 				vec3 p = mat3(FIXED_PARTICLE_SIZE * 6.0f) * pos + offset;
 				glm::mat4 model = glm::mat4(1.0f);

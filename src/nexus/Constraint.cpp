@@ -151,7 +151,8 @@ bool ParticleParticleCollisionConstraint::areParticlesColliding(Particle* p1, Pa
 ------------------------- SHAPE-MATCHING -----------------------------
 ---------------------------------------------------------------------- */
 ShapeMatchingConstraint::ShapeMatchingConstraint(std::vector<Particle*> particles, float stiffness)
-	: Constraint(stiffness, CONSTRAINT_TYPE::EQUALITY), particles(particles), prevRot(Quaterniond::Identity())
+	: Constraint(stiffness, CONSTRAINT_TYPE::EQUALITY), particles(particles), prevRot(Quaterniond::Identity()),
+	shapeMatchingMat(mat3(1.0f))
 {
 	// store rest configuration
 	updateCurrentCom();
