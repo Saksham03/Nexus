@@ -199,7 +199,7 @@ void ParticleViewer::addMesh()
 
 	int phase = NexusObject::getObjectID();
 
-	uPtr<NexusRigidBody> rb = mkU<NexusRigidBody>(0.05f);
+	uPtr<NexusRigidBody> rb = mkU<NexusRigidBody>(1.0f);
 	vec3 offset = vec3(50.0f, 200.0f,50.0f);
 	for (int i = 0; i < voxelPtr->nvertices; i++)
 	{
@@ -254,7 +254,7 @@ void ParticleViewer::drawParticles(const glm::mat4& projView)
 	for (auto& obj : solver->getObjects())
 	{
 		NexusRigidBody* rb = dynamic_cast<NexusRigidBody*>(obj.get());
-		if (rb != nullptr)
+		if (false && rb != nullptr)
 		{
 			vec3 offset = vec3(50.0f, 200.0f, 50.0f);
 
