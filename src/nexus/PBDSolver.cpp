@@ -1,11 +1,12 @@
 #include "PBDSolver.h"
 
 PBDSolver::PBDSolver()
-	:PBDSolver(GRAVITY, std::vector<uPtr<NexusObject>>())
+	:PBDSolver(std::vector<uPtr<NexusObject>>())
 {}
 
-PBDSolver::PBDSolver(vec3 gravity, std::vector<uPtr<NexusObject>> objects)
-	: gravity(gravity), objects(std::move(objects)), collConstraints(std::vector<uPtr<Constraint>>()),
+PBDSolver::PBDSolver(std::vector<uPtr<NexusObject>> objects)
+	: objects(std::move(objects)), collConstraints(std::vector<uPtr<Constraint>>()),
+	solverAttributes(NUM_SOLVER_ITERATIONS, NUM_SOLVER_SUBSTEPS, GRAVITY, vec3(0.0f)),
 	particleHash(SpatialHash(SPATIAL_HASH_GRID_SIZE)),
 	alreadyCheckedCollisions()
 {}
@@ -28,8 +29,9 @@ void PBDSolver::update(float deltaTime)
 			{
 				if (particle->invMass > 0.0f)
 				{
+					vec3 totalAcceleration = solverAttributes.gravity + solverAttributes.wind;
 					// Handle gravity
-					particle->v = particle->v + dt * gravity;
+					particle->v = particle->v + dt * totalAcceleration;
 					particle->prevX = particle->x;
 					particle->x += dt * particle->v;
 				}
@@ -187,3 +189,9 @@ const std::vector<uPtr<NexusObject>>& PBDSolver::getObjects() const
 {
 	return objects;
 }
+
+void PBDSolver::setSolverAttributes(SolverAttributes sa)
+{
+	this->solverAttributes = sa;
+}
+
