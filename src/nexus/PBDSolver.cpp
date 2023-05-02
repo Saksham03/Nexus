@@ -20,9 +20,9 @@ void PBDSolver::update(float deltaTime)
 	generateSpatialHash();
 	generateCollisions();
 
-	for (int substep = 0; substep < NUM_SOLVER_SUBSTEPS; substep++)
+	for (int substep = 0; substep < solverAttributes.solverSubsteps; substep++)
 	{
-		float dt = deltaTime / NUM_SOLVER_SUBSTEPS;
+		float dt = deltaTime / solverAttributes.solverSubsteps;
 		for (auto& obj : objects)
 		{
 			for (auto& particle : obj->particles)
@@ -37,7 +37,7 @@ void PBDSolver::update(float deltaTime)
 				}
 			}
 
-			for (int i = 0; i < NUM_SOLVER_ITERATIONS; i++)
+			for (int i = 0; i < solverAttributes.solverIterations; i++)
 			{
 				for (auto& c : collConstraints)
 				{
