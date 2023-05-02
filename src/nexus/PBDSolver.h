@@ -23,7 +23,6 @@ struct SolverAttributes {
 
 class PBDSolver {
 private:
-	SolverAttributes solverAttributes;
 	std::vector<uPtr<NexusObject>> objects;
 	std::vector<uPtr<Constraint>> collConstraints;
 	std::unordered_set<std::pair<Particle*, Particle*>, PairHash> alreadyCheckedCollisions;
@@ -31,6 +30,8 @@ private:
 	SpatialHash particleHash;
 	
 public:
+	SolverAttributes solverAttributes;
+
 	PBDSolver();
 	PBDSolver(std::vector<uPtr<NexusObject>> objects);
 	~PBDSolver();
