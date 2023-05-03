@@ -23,6 +23,7 @@ public:
 
 	void addParticle(uPtr<Particle> p);
 	void addStretchConstraint(Particle* p1, Particle* p2, float distance, float stiffness);
+	void addBendingConstraint(Particle* p1, Particle* p2, Particle* p3, Particle* p4, float stiffness);
 	void fixParticle(Particle* p);
 	const std::vector<uPtr<Particle>>& getParticles() const;
 	virtual void preComputeConstraints() = 0;

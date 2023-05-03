@@ -96,7 +96,7 @@ private:
     Particle* p1, * p2, * p3, * p4;
     float threshold;
 public:
-    BendingConstraint(Particle*, Particle*, Particle*, Particle*, float);
+    BendingConstraint(Particle* p1, Particle* p2, Particle* p3, Particle* p4, float threshold, float stiffness = 1.0f);
     ~BendingConstraint();
     void projectConstraint(float iteration) override;
 };

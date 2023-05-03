@@ -29,9 +29,15 @@ void NexusObject::addStretchConstraint(Particle* p1, Particle* p2, float distanc
 	constraints.push_back(mkU<StretchConstraint>(p1, p2, distance, stiffness));
 }
 
+void NexusObject::addBendingConstraint(Particle* p1, Particle* p2, Particle* p3, Particle* p4, float stiffness) {
+	vec3 n1 = glm::normalize(glm::cross(p2->x - p1->x, p3->x - p1->x));
+	vec3 n2 = glm::normalize(glm::cross(p2->x - p1->x, p4->x - p1->x));
+	uPtr<BendingConstraint> d = mkU<BendingConstraint>(p1, p2, p3, p4, glm::acos(glm::clamp(glm::dot(n1, n2), -1.f, 1.f)), stiffness);
+	constraints.push_back(std::move(d));
+}
+
 void NexusObject::fixParticle(Particle* p) {
-	//p->mass = -1.f;
-	//p->invMass = 0.f;
+
 	std::unique_ptr<DistanceConstraint> d1 = std::make_unique<DistanceConstraint>(p, p->x, 0.f);
 	constraints.push_back(std::move(d1));
 }

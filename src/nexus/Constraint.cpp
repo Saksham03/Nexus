@@ -252,8 +252,8 @@ const vec3& ShapeMatchingConstraint::getCurrentCOM() const
 #pragma endregion
 
 
-BendingConstraint::BendingConstraint(Particle* p1, Particle* p2, Particle* p3, Particle* p4, float t)
-	:Constraint(1.f, CONSTRAINT_TYPE::EQUALITY), p1(p1), p2(p2), p3(p3), p4(p4), threshold(t)
+BendingConstraint::BendingConstraint(Particle* p1, Particle* p2, Particle* p3, Particle* p4, float t, float stiffness)
+	:Constraint(stiffness, CONSTRAINT_TYPE::EQUALITY), p1(p1), p2(p2), p3(p3), p4(p4), threshold(t)
 {}
 
 BendingConstraint::~BendingConstraint()
@@ -267,7 +267,7 @@ void BendingConstraint::projectConstraint(float iteration) {
 	vec3 n1 = glm::normalize(glm::cross(P2, P3));
 	vec3 n2 = glm::normalize(glm::cross(P2, P4));
 	float d = glm::clamp(glm::dot(n1, n2), -1.f, 1.f);
-	float d1 = glm::dot(n1, n2);
+	
 	function = glm::acos(d) - threshold;
 	if (!isConstraintSatisfied()) {
 		vec3 q3 = (glm::cross(P2, n2) + d * (glm::cross(n1, P2))) / glm::length(glm::cross(P2, P3));
@@ -285,10 +285,8 @@ void BendingConstraint::projectConstraint(float iteration) {
 
 		float wSum = p1->invMass + p2->invMass + p3->invMass + p4->invMass;
 		float qSum = glm::dot(q1, q1) + glm::dot(q2, q2) + glm::dot(q3, q3) + glm::dot(q4, q4);
-
 		float mulFactor = sqrt(1.f - d * d) * function;
-
-		weightFactor = wSum * qSum;
+		weightFactor = wSum * qSum + 0.0001;
 
 		vec3 deltaX1 = -p1->invMass * mulFactor * q1 / weightFactor;
 		vec3 deltaX2 = -p2->invMass * mulFactor * q2 / weightFactor;
@@ -296,6 +294,7 @@ void BendingConstraint::projectConstraint(float iteration) {
 		vec3 deltaX4 = -p4->invMass * mulFactor * q4 / weightFactor;
 
 		float k = (1 - pow(1 - stiffness, 1.0f / iteration));
+
 		p1->x += k * deltaX1;
 		p2->x += k * deltaX2;
 		p3->x += k * deltaX3;
