@@ -161,7 +161,9 @@ ShapeMatchingConstraint::ShapeMatchingConstraint(std::vector<Particle*> particle
 
 	for (auto& particle : (particles))
 	{
-		particle->x -= (particle->x - com_rest) * FIXED_PARTICLE_SIZE * 0.70f;
+		// TODO: fix this! this is adding drift
+		// Potential solution: move particles "inwards" based on surface normal
+		//particle->x -= (particle->x - com_rest) * FIXED_PARTICLE_SIZE * 0.70f;
 		q.push_back(particle->x - com_rest);
 	}
 }
