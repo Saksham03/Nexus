@@ -4,11 +4,11 @@ NexusCloth::NexusCloth()
 	: NexusCloth(std::vector<uPtr<Particle>>(), 1.0f)
 {}
 
-NexusCloth::NexusCloth(float stiffness)
+NexusCloth::NexusCloth(double stiffness)
 	: NexusCloth(std::vector<uPtr<Particle>>(), stiffness)
 {}
 
-NexusCloth::NexusCloth(std::vector<uPtr<Particle>> particles, float stiffness)
+NexusCloth::NexusCloth(std::vector<uPtr<Particle>> particles, double stiffness)
 	: NexusObject(NEXUS_OBJECT_TYPE::CLOTH, std::move(particles)), stiffness(stiffness),
 	LENGTH(0), BREADTH(0)
 {}
@@ -59,7 +59,7 @@ void NexusCloth::preComputeConstraints()
 			Particle* p4 = particles[i * LENGTH + j + 1].get();
 			vec3 n1 = glm::normalize(glm::cross(p2->x - p1->x, p3->x - p1->x));
 			vec3 n2 = glm::normalize(glm::cross(p2->x - p1->x, p4->x - p1->x));
-			uPtr<BendingConstraint> d = mkU<BendingConstraint>(p1, p2, p3, p4, glm::acos(glm::dot(n1, n2)));
+			uPtr<BendingConstraint> d = mkU<BendingConstraint>(p1, p2, p3, p4, glm::acos(glm::dot(n1, n2)), 0.2);
 			constraints.push_back(std::move(d));
 		}
 	}
@@ -75,7 +75,7 @@ void NexusCloth::preComputeConstraints()
 			Particle* p4 = particles[(i - 1) * LENGTH + j + 1].get();
 			vec3 n1 = glm::normalize(glm::cross(p2->x - p1->x, p3->x - p1->x));
 			vec3 n2 = glm::normalize(glm::cross(p2->x - p1->x, p4->x - p1->x));
-			uPtr<BendingConstraint> d = mkU<BendingConstraint>(p1, p2, p3, p4, glm::acos(glm::clamp(glm::dot(n1, n2), -1.f, 1.f)));
+			uPtr<BendingConstraint> d = mkU<BendingConstraint>(p1, p2, p3, p4, glm::acos(glm::clamp(glm::dot(n1, n2), -1.0, 1.0)), 0.2);
 			constraints.push_back(std::move(d));
 		}
 	}
@@ -91,7 +91,7 @@ void NexusCloth::preComputeConstraints()
 			Particle* p4 = particles[(i + 1) * LENGTH + j].get();
 			vec3 n1 = glm::normalize(glm::cross(p2->x - p1->x, p3->x - p1->x));
 			vec3 n2 = glm::normalize(glm::cross(p2->x - p1->x, p4->x - p1->x));
-			uPtr<BendingConstraint> d = mkU<BendingConstraint>(p1, p2, p3, p4, glm::acos(glm::dot(n1, n2)));
+			uPtr<BendingConstraint> d = mkU<BendingConstraint>(p1, p2, p3, p4, glm::acos(glm::dot(n1, n2)), 0.2);
 			constraints.push_back(std::move(d));
 		}
 	}

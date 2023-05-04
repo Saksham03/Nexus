@@ -8,7 +8,7 @@
 
 class NexusRigidBody : public NexusObject {
 private:
-	float stiffness;
+	double stiffness;
 
 	mat4 currTransformMat;
 
@@ -19,12 +19,12 @@ private:
 
 public:
 	NexusRigidBody();
-	NexusRigidBody(float stiffness);
+	NexusRigidBody(double stiffness);
 	/// <summary>
 	/// Nexus RigidBody object
 	/// </summary>
 	/// <param name="particles">Set of particles that make up this RigidBody</param>
-	NexusRigidBody(std::vector<uPtr<Particle>> particles, float stiffness);
+	NexusRigidBody(std::vector<uPtr<Particle>> particles, double stiffness);
 	~NexusRigidBody();
 	void setOriginalVerts(std::vector<vec3> originalVertexPositions);
 	std::vector<vec3> getMovedVertices() const;

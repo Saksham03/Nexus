@@ -15,14 +15,14 @@ PBDSolver::PBDSolver(std::vector<uPtr<NexusObject>> objects)
 PBDSolver::~PBDSolver()
 {}
 
-void PBDSolver::update(float deltaTime)
+void PBDSolver::update(double deltaTime)
 {
 	generateSpatialHash();
 	generateCollisions();
 
 	for (int substep = 0; substep < solverAttributes.solverSubsteps; substep++)
 	{
-		float dt = deltaTime / solverAttributes.solverSubsteps;
+		double dt = deltaTime / solverAttributes.solverSubsteps;
 		for (auto& obj : objects)
 		{
 			for (auto& particle : obj->particles)
@@ -41,12 +41,12 @@ void PBDSolver::update(float deltaTime)
 			{
 				for (auto& c : collConstraints)
 				{
-					c->projectConstraint(i);
+					c->projectConstraint(i + 1);
 				}
 
 				for (auto& c : obj->constraints)
 				{
-					c->projectConstraint(i);	// solve constraints
+					c->projectConstraint(i + 1);	// solve constraints
 				}
 
 				for (auto& particle : obj->particles)

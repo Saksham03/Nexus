@@ -8,19 +8,19 @@
 
 class NexusCloth : public NexusObject {
 private:
-	float stiffness;
-	float restLength;
+	double stiffness;
+	double restLength;
 
-	float LENGTH, BREADTH;	// we're assuming a rectangular cloth only right now. TODO: allow arbitrary meshes
+	double LENGTH, BREADTH;	// we're assuming a rectangular cloth only right now. TODO: allow arbitrary meshes
 
 public:
 	NexusCloth();
-	NexusCloth(float stiffness);
+	NexusCloth(double stiffness);
 	/// <summary>
 	/// Nexus Cloth object
 	/// </summary>
 	/// <param name="particles">Set of particles that make up this cloth</param>
-	NexusCloth(std::vector<uPtr<Particle>> particles, float stiffness);
+	NexusCloth(std::vector<uPtr<Particle>> particles, double stiffness);
 	~NexusCloth();
 	void setLengthAndBreadth(int rows, int columns);
 	void preComputeConstraints() override;

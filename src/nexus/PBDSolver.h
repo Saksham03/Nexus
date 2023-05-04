@@ -35,7 +35,7 @@ public:
 	PBDSolver();
 	PBDSolver(std::vector<uPtr<NexusObject>> objects);
 	~PBDSolver();
-	void update(float deltaTime);
+	void update(double deltaTime);
 
 	void addObject(uPtr<NexusObject> obj);
 	void setSolverAttributes(SolverAttributes sa);

@@ -14,6 +14,9 @@ ParticleViewer::ParticleViewer(const std::string& name) :
 	clearColor = ImVec4(0.8f, 0.8f, 0.8f, 1.00f);
 	mParticleModelSphere = std::make_unique<ObjModel>();
 	mParticleModelSphere->loadObj("../obj/sphere.obj");
+
+	SolverAttributes sa(2, 2, GRAVITY, vec3(0.0f, 0.0f, 0.0f));
+	solver->setSolverAttributes(sa);
 	setupScene();
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -25,17 +28,19 @@ ParticleViewer::~ParticleViewer()
 
 void ParticleViewer::setupScene()
 {
-	addRope();
-	addCloth(0);
+	//addRope();
+	Particle *c1 = nullptr, *c2 = nullptr, *c3 = nullptr, *c4 = nullptr;
+
+	addCloth(0, c1, c2, c3, c4);
 	//addCloth(1);
-	addBall();
-	//addCube(1);
+	//addBall();
+	addCube(1, c1, c2, c3, c4);
 	//addCube(0);
 	//addCube(2);
 	//addCube(3);
 	//addCube(4);
 
-	addMesh();
+	//addMesh();
 
 	solver->precomputeConstraints();
 }
@@ -82,10 +87,10 @@ void ParticleViewer::addBall()
 	//solver->addObject(std::move(ball));
 }
 
-void ParticleViewer::addCloth(int idx)
+void ParticleViewer::addCloth(int idx, Particle*& c1, Particle*& c2, Particle*& c3, Particle*& c4)
 {
-	int LENGTH = 50;
-	int BREADTH = 50;
+	int LENGTH = 40;
+	int BREADTH = 40;
 
 	uPtr<NexusCloth> cloth = mkU<NexusCloth>();
 
@@ -96,12 +101,36 @@ void ParticleViewer::addCloth(int idx)
 			{
 				mass = -1.0f;
 			}
-			uPtr<Particle> p = mkU<Particle>(vec3(j * 5.0f, 100 + 150 * idx, i * 5.0f),
+			uPtr<Particle> p = mkU<Particle>(vec3(40 + j * 5.0f, 200 + 150 * idx, 40 + i * 5.0f),
 											vec3(0.0f),
 											-1,
 											mass,
 											FIXED_PARTICLE_SIZE,
 											vec3(0, idx, 1));
+
+			if (i == 0)
+			{
+				if (j == 0)
+				{
+					c1 = p.get();
+				}
+				else if (j == BREADTH - 1)
+				{
+					c2 = p.get();
+				}
+			}
+			else if (i == LENGTH - 1)
+			{
+				if (j == 0)
+				{
+					c3 = p.get();
+				}
+				else if (j == BREADTH - 1)
+				{
+					c4 = p.get();
+				}
+			}
+
 
 			cloth->addParticle(std::move(p));
 		}
@@ -111,16 +140,16 @@ void ParticleViewer::addCloth(int idx)
 	solver->addObject(std::move(cloth));
 }
 
-void ParticleViewer::addCube(int off)
+void ParticleViewer::addCube(int off, Particle* c1, Particle* c2, Particle* c3, Particle* c4)
 {
-	int LENGTH = 9;
-	int BREADTH = 9;
-	int HEIGHT = 9;
+	int LENGTH = 10;
+	int BREADTH = 10;
+	int HEIGHT = 10;
 
 	int phase = NexusObject::getObjectID();
 
 	uPtr<NexusRigidBody> cube = mkU<NexusRigidBody>(1.0f);
-	vec3 offset(50 + off * 50, 200 + off*100, 50 );
+	vec3 offset(10 + off * 50, 200 + off*100, 50 );
 	mat3 rot = mat3(-0.9036922, 0.0000000, -0.4281827,
 	-0.3909073, 0.4080821, 0.8250215,
 	0.1747337, 0.9129453, -0.3687806);
@@ -142,6 +171,32 @@ void ParticleViewer::addCube(int off)
 												mass,
 												FIXED_PARTICLE_SIZE,
 												vec3(1, 1, 1));
+
+				if (k == HEIGHT - 1)
+				{
+					/*if (i == 0)
+					{
+						if (j == 0)
+						{
+							cube->addStretchConstraint(c1, p.get(), 2 * FIXED_PARTICLE_SIZE + 0.0001f, 1.0f);
+						}
+						else if (j == LENGTH - 1)
+						{
+							cube->addStretchConstraint(c2, p.get(), 2 * FIXED_PARTICLE_SIZE + 0.0001f, 1.0f);
+						}
+					}
+					else if (i == BREADTH - 1)
+					{
+						if (j == 0)
+						{
+							cube->addStretchConstraint(c3, p.get(), 2 * FIXED_PARTICLE_SIZE + 0.0001f, 1.0f);
+						}
+						else if (j == LENGTH - 1)
+						{
+							cube->addStretchConstraint(c4, p.get(), 2 * FIXED_PARTICLE_SIZE + 0.0001f, 1.0f);
+						}
+					}*/
+				}
 
 				cube->addParticle(std::move(p));
 			}
@@ -191,7 +246,7 @@ vx_point_cloud_t* LoadFromFileAndVoxelize(const char* filename, float voxelsizex
 void ParticleViewer::addMesh()
 {
 	mCustomMesh = mkU<ObjModel>();
-	mCustomMesh->loadObj("../obj/cube.obj");
+	mCustomMesh->loadObj("../obj/cone.obj");
 	
 	vx_point_cloud_t* voxelPtr;
 	std::vector<vec3> verts;
@@ -200,14 +255,15 @@ void ParticleViewer::addMesh()
 	int phase = NexusObject::getObjectID();
 
 	uPtr<NexusRigidBody> rb = mkU<NexusRigidBody>(1.0f);
-	vec3 offset = vec3(50.0f, 200.0f,50.0f);
+	vec3 offset = vec3(100.0f, 300.0f, 100.0f);
 	for (int i = 0; i < voxelPtr->nvertices; i++)
 	{
 		vx_vertex_t v = voxelPtr->vertices[i];
 		vec3 pos = vec3(v.x, v.y, v.z);
 
-		float mass = 2.0f;
-		uPtr<Particle> p = mkU<Particle>(mat3(FIXED_PARTICLE_SIZE *6.0f) * pos + offset,
+		float mass = 0.0032488629f;
+		//float mass = 2.0f;
+		uPtr<Particle> p = mkU<Particle>(mat3(FIXED_PARTICLE_SIZE *30.0f) * pos + offset,
 			vec3(0.0f),
 			phase,
 			mass,
@@ -254,7 +310,7 @@ void ParticleViewer::drawParticles(const glm::mat4& projView)
 	for (auto& obj : solver->getObjects())
 	{
 		NexusRigidBody* rb = dynamic_cast<NexusRigidBody*>(obj.get());
-		if (rb != nullptr)
+		if (false && rb != nullptr)
 		{
 			vec3 offset = vec3(50.0f, 200.0f, 50.0f);
 
@@ -262,8 +318,8 @@ void ParticleViewer::drawParticles(const glm::mat4& projView)
 			for (auto pos : moved)
 			{
 				vec3 p = mat3(FIXED_PARTICLE_SIZE * 6.0f) * pos + offset;
-				glm::mat4 model = glm::mat4(1.0f);
-				vec3 scale = glm::vec3(FIXED_PARTICLE_SIZE);
+				mat4 model = mat4(1.0);
+				vec3 scale = vec3(FIXED_PARTICLE_SIZE);
 				model = glm::scale(model, scale);
 				model = glm::translate(model, pos / scale);
 
@@ -278,8 +334,8 @@ void ParticleViewer::drawParticles(const glm::mat4& projView)
 		{
 			for (auto& particle : obj->getParticles())
 			{
-				glm::vec3 pos = particle->x;
-				glm::mat4 model = glm::mat4(1.0f);
+				vec3 pos = particle->x;
+				mat4 model = mat4(1.0f);
 				vec3 scale = glm::vec3(particle->radius);
 				model = glm::scale(model, scale);
 				model = glm::translate(model, pos / scale);

@@ -22,40 +22,40 @@ class Constraint
 protected:
     std::vector<int> indices;
     CONSTRAINT_TYPE type;
-    float stiffness;
-    float function; //evaluation of the function at the current state
+    double stiffness;
+    double function; //evaluation of the function at the current state
 
 public:
     Constraint();
-    Constraint(float, CONSTRAINT_TYPE);
+    Constraint(double, CONSTRAINT_TYPE);
     virtual ~Constraint();
     bool isConstraintSatisfied();
-    virtual void projectConstraint(float iteration) = 0;
+    virtual void projectConstraint(int iteration) = 0;
 };
 
 class DistanceConstraint : public Constraint
 {
 private:
     Particle* p;
-    glm::vec3 ref;
-    float radius;
+    vec3 ref;
+    double radius;
 
 public:
-    DistanceConstraint(Particle*, glm::vec3, float, float stiffness = 1.0f);
+    DistanceConstraint(Particle*, glm::vec3, double, double stiffness = 1.0f);
     ~DistanceConstraint();
-    void projectConstraint(float iteration) override;
+    void projectConstraint(int iteration) override;
 };
 
 class StretchConstraint : public Constraint
 {
 private:
     Particle* p1, * p2;
-    float threshold;
+    double threshold;
 
 public:
-    StretchConstraint(Particle*, Particle*, float, float stiffness = 1.0f);
+    StretchConstraint(Particle*, Particle*, double, double stiffness = 1.0f);
     ~StretchConstraint();
-    void projectConstraint(float iteration) override;
+    void projectConstraint(int iteration) override;
 };
 
 class ParticleParticleCollisionConstraint : public Constraint
@@ -64,9 +64,9 @@ private:
     Particle* p1, * p2;
 
 public:
-    ParticleParticleCollisionConstraint(Particle*, Particle*, float stiffness = 1.0f);
+    ParticleParticleCollisionConstraint(Particle*, Particle*, double stiffness = 1.0f);
     ~ParticleParticleCollisionConstraint();
-    void projectConstraint(float iteration) override;
+    void projectConstraint(int iteration) override;
 
     static bool areParticlesColliding(Particle*, Particle*);
 };
@@ -83,9 +83,9 @@ private:
     void updateCurrentCom();
     void extractRotation(const Matrix3d& A, Quaterniond& q, const unsigned int maxIter) const;
 public:
-    ShapeMatchingConstraint(std::vector<Particle*> particles, float stiffness = 1.0f);
+    ShapeMatchingConstraint(std::vector<Particle*> particles, double stiffness = 1.0f);
     ~ShapeMatchingConstraint();
-    void projectConstraint(float iteration) override;
+    void projectConstraint(int iteration) override;
     const vec3& getCurrentCOM() const;
     const mat3& getShapeMatchingMatrix() const;
 };
@@ -94,9 +94,9 @@ class BendingConstraint : public Constraint
 {
 private:
     Particle* p1, * p2, * p3, * p4;
-    float threshold;
+    double threshold;
 public:
-    BendingConstraint(Particle* p1, Particle* p2, Particle* p3, Particle* p4, float threshold, float stiffness = 1.0f);
+    BendingConstraint(Particle* p1, Particle* p2, Particle* p3, Particle* p4, double threshold, double stiffness = 1.0f);
     ~BendingConstraint();
-    void projectConstraint(float iteration) override;
+    void projectConstraint(int iteration) override;
 };

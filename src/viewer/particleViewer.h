@@ -17,8 +17,8 @@ public:
 	void setupScene();
 	void addRope();
 	void addBall();
-	void addCloth(int idx);
-	void addCube(int off);
+	void addCloth(int idx, Particle*& c1, Particle*& c2, Particle*& c3, Particle*& c4);
+	void addCube(int off, Particle *c1, Particle *c2, Particle *c3, Particle *c4);
 	void addMesh();
 //	virtual void createGUIWindow() override;
 //	virtual void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) override;
