@@ -11,11 +11,11 @@ typedef glm::dmat4 mat4;
 #define mkU std::make_unique
 
 // SOLVER RELATED DEFINES
-#define GRAVITY vec3(0.0f, -9.8, 0.0f)
+#define GRAVITY vec3(0.0, -9.8, 0.0)
 #define NUM_SOLVER_SUBSTEPS 1
 #define NUM_SOLVER_ITERATIONS 5
 #define FIXED_TIMESTEP 0.02    // roughly equivalent to 50 FPS, same as Unity
-#define FIXED_PARTICLE_SIZE 2.5
+#define FIXED_PARTICLE_SIZE 0.25
 #define SPATIAL_HASH_GRID_SIZE (4.0 * FIXED_PARTICLE_SIZE)
 
 /// <summary>
