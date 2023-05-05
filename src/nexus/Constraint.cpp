@@ -174,6 +174,7 @@ ShapeMatchingConstraint::~ShapeMatchingConstraint()
 void ShapeMatchingConstraint::projectConstraint(int iteration)
 {
 	updateCurrentCom();
+
 	// covariance matrix A
 	Matrix3d A;
 	A.setZero();
@@ -189,7 +190,7 @@ void ShapeMatchingConstraint::projectConstraint(int iteration)
 		A(2, 0) += p[2] * q[i][0];	A(2, 1) += p[2] * q[i][1];	A(2, 2) += p[2] * q[i][2];
 	}
 
-	extractRotation(A, prevRot, 2);
+	extractRotation(A, prevRot, 5);
 	Matrix3d R = prevRot.matrix();
 	shapeMatchingMat = mat3();
 	shapeMatchingMat[0][0] = R(0, 0);  shapeMatchingMat[0][1] = R(0, 1); shapeMatchingMat[0][2] = R(0, 2);
