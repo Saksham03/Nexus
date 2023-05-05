@@ -77,6 +77,10 @@ private:
     std::vector<Particle*> particles;
     vec3 com_rest;                  	// center of mass at rest
     std::vector<vec3> q;                // rest config positions - rest center of mass positions
+    mat3 A_qq;             // matrix of q*q
+    std::vector<VectorXd> qDash;        // basically a vec9
+    MatrixXd A_qqDash;
+
     Quaterniond prevRot;
     vec3 currCOM;
     mat3 shapeMatchingMat;

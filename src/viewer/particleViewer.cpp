@@ -31,16 +31,16 @@ void ParticleViewer::setupScene()
 	//addRope();
 	Particle *c1 = nullptr, *c2 = nullptr, *c3 = nullptr, *c4 = nullptr;
 
-	addCloth(0, c1, c2, c3, c4);
+	//addCloth(0, c1, c2, c3, c4);
 	//addCloth(1);
 	//addBall();
-	addCube(1, c1, c2, c3, c4);
+	//addCube(0, c1, c2, c3, c4);
 	//addCube(0);
 	//addCube(2);
 	//addCube(3);
 	//addCube(4);
 
-	//addMesh();
+	addMesh();
 
 	solver->precomputeConstraints();
 }
@@ -145,11 +145,11 @@ void ParticleViewer::addCube(int off, Particle* c1, Particle* c2, Particle* c3, 
 	int LENGTH = 10;
 	int BREADTH = 10;
 	int HEIGHT = 10;
-
+	
 	int phase = NexusObject::getObjectID();
 
 	uPtr<NexusRigidBody> cube = mkU<NexusRigidBody>(1.0f);
-	vec3 offset(10 + off * 50, 200 + off*100, 50 );
+	vec3 offset(10 + off * 50, 300 + off*100, 50 );
 	mat3 rot = mat3(-0.9036922, 0.0000000, -0.4281827,
 	-0.3909073, 0.4080821, 0.8250215,
 	0.1747337, 0.9129453, -0.3687806);
@@ -238,7 +238,7 @@ vx_point_cloud_t* LoadFromFileAndVoxelize(const char* filename, float voxelsizex
 
 	for (size_t v = 0; v < attrib.vertices.size() / 3; v++) {
 		vec3 vert(attrib.vertices[3 * v + 0], attrib.vertices[3 * v + 1], attrib.vertices[3 * v + 2]);
-		verts.push_back(vert);
+		verts.push_back(50.0 *vert);
 	}
 	return Helper::Voxelize(verts, indices, voxelsizex, voxelsizey, voxelsizez, precision);
 }
@@ -250,7 +250,7 @@ void ParticleViewer::addMesh()
 	
 	vx_point_cloud_t* voxelPtr;
 	std::vector<vec3> verts;
-	voxelPtr = LoadFromFileAndVoxelize("../obj/cube.obj", FIXED_PARTICLE_SIZE * 0.1f, FIXED_PARTICLE_SIZE * 0.1f, FIXED_PARTICLE_SIZE * 0.1f, 0.01f, verts);
+	voxelPtr = LoadFromFileAndVoxelize("../obj/bunny.obj", FIXED_PARTICLE_SIZE * 0.1f, FIXED_PARTICLE_SIZE * 0.1f, FIXED_PARTICLE_SIZE * 0.1f, 0.01f, verts);
 
 	int phase = NexusObject::getObjectID();
 
@@ -261,9 +261,9 @@ void ParticleViewer::addMesh()
 		vx_vertex_t v = voxelPtr->vertices[i];
 		vec3 pos = vec3(v.x, v.y, v.z);
 
-		float mass = 0.0032488629f;
-		//float mass = 2.0f;
-		uPtr<Particle> p = mkU<Particle>(mat3(FIXED_PARTICLE_SIZE *30.0f) * pos + offset,
+		//float mass = 0.0032488629f;
+		float mass = 2.0f;
+		uPtr<Particle> p = mkU<Particle>(mat3(FIXED_PARTICLE_SIZE *5.0f) * pos + offset,
 			vec3(0.0f),
 			phase,
 			mass,

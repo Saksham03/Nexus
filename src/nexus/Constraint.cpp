@@ -152,20 +152,48 @@ bool ParticleParticleCollisionConstraint::areParticlesColliding(Particle* p1, Pa
 ---------------------------------------------------------------------- */
 ShapeMatchingConstraint::ShapeMatchingConstraint(std::vector<Particle*> particles, double stiffness)
 	: Constraint(stiffness, CONSTRAINT_TYPE::EQUALITY), particles(particles), prevRot(Quaterniond::Identity()),
-	shapeMatchingMat(mat3(1.0f))
+	shapeMatchingMat(mat3(1.0f)), qDash()
 {
 	// store rest configuration
 	updateCurrentCom();
 	com_rest = getCurrentCOM();
 
+	A_qqDash = MatrixXd(9, 9);
+	A_qqDash.setZero();
+
+	VectorXd qd(9);
 
 	for (auto& particle : (particles))
 	{
 		// TODO: fix this! this is adding drift
 		// Potential solution: move particles "inwards" based on surface normal
 		//particle->x -= (particle->x - com_rest) * FIXED_PARTICLE_SIZE * 0.70f;
-		q.push_back(particle->x - com_rest);
+		vec3 qCurr = particle->x - com_rest;
+		q.push_back(qCurr);
+
+		qd[0] = qCurr[0]; qd[1] = qCurr[1]; qd[2] = qCurr[2];
+		qd[3] = qCurr[0] * qCurr[0]; qd[4] = qCurr[1] * qCurr[1]; qd[5] = qCurr[2] * qCurr[2];
+		qd[6] = qCurr[0] * qCurr[1]; qd[7] = qCurr[1] * qCurr[2]; qd[8] = qCurr[2] * qCurr[0];
+
+		qCurr *= particle->mass;
+
+		A_qq[0][0] += qCurr.x * qCurr.x;	A_qq[0][1] += qCurr.x * qCurr.y;	A_qq[0][2] += qCurr.x * qCurr.z;
+		A_qq[1][0] += qCurr.y * qCurr.x;	A_qq[1][1] += qCurr.y * qCurr.y;	A_qq[1][2] += qCurr.y * qCurr.z;
+		A_qq[2][0] += qCurr.z * qCurr.x;	A_qq[2][1] += qCurr.z * qCurr.y;	A_qq[2][2] += qCurr.z * qCurr.z;
+
+		qDash.push_back(qd);
+
+		for (int i = 0; i < 9; i++)
+		{
+			for (int j = 0; j < 9; j++)
+			{
+				A_qqDash(i,j) += particle->mass * qd[i] * qd[j];
+			}
+		}
 	}
+
+	A_qq = glm::inverse(A_qq);
+	A_qqDash = A_qqDash.inverse();
 }
 
 ShapeMatchingConstraint::~ShapeMatchingConstraint()
@@ -176,8 +204,12 @@ void ShapeMatchingConstraint::projectConstraint(int iteration)
 	updateCurrentCom();
 
 	// covariance matrix A
-	Matrix3d A;
-	A.setZero();
+	Matrix3d A_pq;
+	A_pq.setZero();
+
+	MatrixXd A_pqDash(3, 9);
+	A_pqDash.setZero();
+
 	for (int i = 0; i < particles.size(); i++)
 	{
 		Particle* particle = particles[i];
@@ -185,24 +217,68 @@ void ShapeMatchingConstraint::projectConstraint(int iteration)
 
 		p *= particle->mass;
 
-		A(0, 0) += p[0] * q[i][0];	A(0, 1) += p[0] * q[i][1];	A(0, 2) += p[0] * q[i][2];
-		A(1, 0) += p[1] * q[i][0];	A(1, 1) += p[1] * q[i][1];	A(1, 2) += p[1] * q[i][2];
-		A(2, 0) += p[2] * q[i][0];	A(2, 1) += p[2] * q[i][1];	A(2, 2) += p[2] * q[i][2];
+		A_pq(0, 0) += p[0] * q[i][0];	A_pq(0, 1) += p[0] * q[i][1];	A_pq(0, 2) += p[0] * q[i][2];
+		A_pq(1, 0) += p[1] * q[i][0];	A_pq(1, 1) += p[1] * q[i][1];	A_pq(1, 2) += p[1] * q[i][2];
+		A_pq(2, 0) += p[2] * q[i][0];	A_pq(2, 1) += p[2] * q[i][1];	A_pq(2, 2) += p[2] * q[i][2];
+
+		for (int k = 0; k < 3; k++)
+		{
+			for (int j = 0; j < 9; j++)
+			{
+				A_pqDash(k, j) += p[k] * qDash[i](j);
+			}
+		}
 	}
 
-	extractRotation(A, prevRot, 5);
+	extractRotation(A_pq, prevRot, 5);
 	Matrix3d R = prevRot.matrix();
 	shapeMatchingMat = mat3();
 	shapeMatchingMat[0][0] = R(0, 0);  shapeMatchingMat[0][1] = R(0, 1); shapeMatchingMat[0][2] = R(0, 2);
 	shapeMatchingMat[1][0] = R(1, 0);  shapeMatchingMat[1][1] = R(1, 1); shapeMatchingMat[1][2] = R(1, 2);
 	shapeMatchingMat[2][0] = R(2, 0);  shapeMatchingMat[2][1] = R(2, 1); shapeMatchingMat[2][2] = R(2, 2);
 	shapeMatchingMat = glm::transpose(shapeMatchingMat);
+
+	mat3 A;
+	A[0][0] = A_pq(0, 0); A[0][1] = A_pq(0, 1); A[0][2] = A_pq(0, 2);
+	A[1][0] = A_pq(1, 0); A[1][1] = A_pq(1, 1); A[1][2] = A_pq(1, 2);
+	A[2][0] = A_pq(2, 0); A[2][1] = A_pq(2, 1); A[2][2] = A_pq(2, 2);
+	A = glm::transpose(A);
+	A = A * A_qq;
+
+	double det = pow(glm::determinant(A), 1/3.0);
+	if (det != 0)
+	{
+		A /= det;
+	}
+
+	MatrixXd Adash(3, 9);
+	Adash = A_pqDash * A_qqDash;
+	//det = pow(Adash.determinant(), 1 / 3.0);
+	//if (det != 0)
+	//{
+	//	Adash /= det;
+	//}
+	MatrixXd Rdash(3, 9);
+	Rdash.setZero();
+	for (int i = 0; i < 3; i++)
+	{
+		for (int j = 0; j < 3; j++)
+		{
+			Rdash(i, j) = R(i, j);
+		}
+	}
+
+	double beta = pow(0.9,1/20.0);
+
 	for (int i = 0; i < particles.size(); i++)
 	{
 		Particle* particle = particles[i];
 
-		vec3 g = shapeMatchingMat * q[i] + currCOM;
+		Vector3d gVec = (beta * Adash + (1 - beta) * Rdash) * Vector3d(q[i].x, q[i].y, q[i].z) + 
+			Vector3d(currCOM.x, currCOM.y, currCOM.z);
 
+		//vec3 g = (beta * A + (1-beta)*shapeMatchingMat) * q[i] + currCOM;
+		vec3 g(gVec[0], gVec[1], gVec[2]);
 		vec3 C = (g - particle->x) * (1 - pow(1 - stiffness, 1.0 / iteration));
 
 		particle->x += C;
